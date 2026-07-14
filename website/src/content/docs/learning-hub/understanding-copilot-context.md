@@ -3,7 +3,7 @@ title: 'Understanding Copilot Context'
 description: 'Learn how GitHub Copilot uses context from your code, workspace, and conversation to generate relevant suggestions.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2025-11-28
+lastUpdated: 2026-07-14
 estimatedReadingTime: '8 minutes'
 tags:
   - context
@@ -11,6 +11,9 @@ tags:
   - how-it-works
 relatedArticles:
   - ./what-are-agents-skills-instructions.md
+  - ./defining-custom-instructions.md
+  - ./creating-effective-skills.md
+  - ./understanding-mcp-servers.md
 ---
 
 Context is the foundation of how GitHub Copilot generates relevant, accurate suggestions. Understanding what Copilot "sees" and how it uses that information helps you write better prompts, get higher-quality completions, and work more effectively with AI assistance. This article explains the types of context Copilot uses and how to optimize your development environment for better results.
@@ -56,6 +59,42 @@ In GitHub Copilot Chat, conversation context includes all previous messages, que
 Workspace context includes project-level information like your directory structure, configuration files (`.gitignore`, `package.json`, `tsconfig.json`), and overall repository organization. This helps Copilot understand your project type, dependencies, and conventions.
 
 **Example**: If your workspace contains a `package.json` with TypeScript and React dependencies, Copilot recognizes this is a TypeScript React project and generates suggestions using appropriate patterns and types.
+
+## Persistent Context Sources
+
+Beyond the immediate workspace, GitHub Copilot can draw on several persistent context sources that carry across sessions and don't require you to re-supply them each time.
+
+### Instructions and AGENTS.md
+
+Instruction files (`*.instructions.md`) and `AGENTS.md` are loaded automatically and provide standing guidance — coding standards, naming conventions, and architectural rules — that shapes every response in matching file patterns. See [Defining Custom Instructions](../defining-custom-instructions/) for details.
+
+#### @-style File Imports _(v1.0.66+, Copilot CLI)_
+
+Instruction files, `AGENTS.md`, and `CLAUDE.md` support **@-style imports** that embed the content of another file inline. This lets you compose large instruction sets from smaller, reusable pieces:
+
+```markdown
+<!-- .github/instructions/backend.instructions.md -->
+@docs/architecture-overview.md
+@docs/api-conventions.md
+
+Always validate request bodies using Zod schemas.
+```
+
+When Copilot CLI loads the instruction file, it reads the referenced files and substitutes their content before sending context to the model. This is a powerful pattern for keeping shared reference material (architecture docs, API specs) in sync with the instructions that guide Copilot.
+
+### Skills
+
+Skills (`SKILL.md` folders) provide automatic context injection. When the coding agent or CLI determines that a skill is relevant to the current task — based on the skill's `description` — it loads the skill's instructions and any bundled reference assets into the context window automatically, without you needing to mention it.
+
+**Example**: A `database-migrations` skill with the description "Guide for creating safe database migrations" will be injected automatically whenever the agent is working on schema changes.
+
+See [Creating Effective Skills](../creating-effective-skills/) for more details.
+
+### MCP Servers
+
+MCP (Model Context Protocol) servers act as runtime context bridges, giving Copilot access to external data sources — internal documentation, databases, cloud resources, or APIs — that aren't part of your repository. Each MCP tool call enriches the context window with fresh, external information on demand.
+
+See [Understanding MCP Servers](../understanding-mcp-servers/) for configuration details.
 
 ## How Context Influences Suggestions
 
@@ -167,6 +206,7 @@ A: Yes, closing a file can remove it from Copilot's active context. However, fil
 Now that you understand how context works in GitHub Copilot, explore these related topics:
 
 - **[What are Agents, Skills, and Instructions](../what-are-agents-skills-instructions/)** - Learn about customization types that provide persistent context
+- **[Defining Custom Instructions](../defining-custom-instructions/)** - Create persistent instructions and use @-style imports to compose reusable context
+- **[Creating Effective Skills](../creating-effective-skills/)** - Build skills that inject specialized context automatically
+- **[Understanding MCP Servers](../understanding-mcp-servers/)** - Connect Copilot to external data sources as runtime context
 - **[Copilot Configuration Basics](../copilot-configuration-basics/)** - Configure settings to optimize context usage
-- **[Creating Effective Skills](../creating-effective-skills/)** - Use context effectively in your skills
-- **Common Pitfalls and Solutions** _(coming soon)_ - Avoid context-related mistakes
