@@ -3,7 +3,7 @@ title: 'GitHub Copilot Terminology Glossary'
 description: 'A quick reference guide defining common GitHub Copilot and platform-specific terms.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-04-02
+lastUpdated: 2026-07-14
 estimatedReadingTime: '8 minutes'
 tags:
   - glossary
@@ -230,6 +230,82 @@ The autonomous GitHub Copilot agent that works on issues in a cloud environment 
 **Learn more**: [Using the Copilot Coding Agent](../using-copilot-coding-agent/)
 
 **Related terms**: [Agent](#agent), [Hook](#hook)
+
+---
+
+### Agentic Workflow
+
+A markdown file that combines YAML frontmatter (triggers, permissions, safe outputs) with natural language instructions for a coding agent to follow at runtime inside GitHub Actions. Agentic Workflows are compiled to `.lock.yml` files via the `gh aw` CLI and triggered by schedules, repository events, or slash commands.
+
+**Example**: A `daily-issues-report.md` workflow that generates a daily summary of open issues every weekday morning.
+
+**When to use**: For autonomous, event-driven repository automation that requires reasoning or summarization beyond static GitHub Actions.
+
+**Learn more**: [Agentic Workflows](../agentic-workflows/)
+
+**Related terms**: [Coding Agent](#coding-agent)
+
+---
+
+### Automation
+
+A scheduled or on-demand task configured in the GitHub Copilot app that runs using the same agentic technology as the Coding Agent. Automations can use built-in templates or custom instructions and can run in `plan`, `interactive`, or `autopilot` modes.
+
+**Example**: An automation that runs every morning to triage new issues and assign labels.
+
+**When to use**: For recurring tasks that need AI reasoning but are driven from the Copilot app rather than GitHub Actions.
+
+**Learn more**: [Using Automations in the GitHub Copilot app](../using-automations-in-copilot-app/)
+
+**Related terms**: [Agentic Workflow](#agentic-workflow), [Coding Agent](#coding-agent)
+
+---
+
+### Canvas
+
+An interactive work surface in the GitHub Copilot app where you and agents collaborate. A canvas displays the actual work in progress—a plan, a pull request diff, terminal output, or a live browser session—rather than a text chat thread. Agents update the canvas as they work and you can edit, approve, or redirect changes on the same surface. Canvases can be saved as reusable **canvas extensions**.
+
+**When to use**: For visual, interactive collaboration with agents on complex tasks where you want to see and shape the work in real time.
+
+**Learn more**: [Working with Canvas Extensions](../working-with-canvas-extensions/)
+
+**Related terms**: [Coding Agent](#coding-agent)
+
+---
+
+### Agent Merge
+
+A built-in automation in the GitHub Copilot app that monitors a pull request through its entire review lifecycle: running CI/CD checks, addressing failing tests or lint errors, tracking required reviewer approvals, and optionally merging when all conditions are met. The level of automation is configurable.
+
+**When to use**: To automate the tedious parts of the PR review and merge process without manual follow-up.
+
+**Learn more**: [Getting Started with the GitHub Copilot app](../github-copilot-app/)
+
+**Related terms**: [Coding Agent](#coding-agent), [Automation](#automation)
+
+---
+
+### Remote Control
+
+A feature that lets you connect to and steer an active Copilot Coding Agent session from a local Copilot CLI terminal. Remote control allows you to observe progress, send follow-up prompts, and redirect the agent's work in real time — before it opens a pull request. Enable with `/remote on` inside a session or launch with `copilot --remote`.
+
+**When to use**: For long-running tasks where you want to monitor progress or make mid-course corrections without waiting for the final PR.
+
+**Learn more**: [Using the Copilot Coding Agent](../using-copilot-coding-agent/#remote-control)
+
+**Related terms**: [Coding Agent](#coding-agent)
+
+---
+
+### Worktree (Isolated Worktree)
+
+A real, isolated copy of a git branch created by the GitHub Copilot app for each agent session. Each worktree has its own branch and environment, so multiple agents can work on different tasks in parallel without stepping on each other. The Copilot app manages worktree creation and cleanup automatically.
+
+**When to use**: Understanding this term helps explain why multiple Copilot app sessions can run in parallel safely.
+
+**Learn more**: [Getting Started with the GitHub Copilot app](../github-copilot-app/)
+
+**Related terms**: [Coding Agent](#coding-agent)
 
 ---
 
