@@ -3,7 +3,7 @@ title: 'Understanding MCP Servers'
 description: 'Learn how Model Context Protocol servers extend GitHub Copilot with access to external tools, databases, and APIs.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-15
 estimatedReadingTime: '8 minutes'
 tags:
   - mcp
@@ -158,6 +158,28 @@ These are especially useful for plugins and installer scripts that need to self-
 | `session.mcp.resources.listTemplates` | List resource templates exposed by a connected MCP server (paginated) |
 
 Pagination support means these RPCs work reliably even when a server exposes a large number of resources. This is particularly useful for MCP servers that expose dynamic resource collections (such as database schemas or file trees) that need to be enumerated programmatically by agents or scripts.
+
+### Persisting GitHub MCP Toolset Configuration
+
+*(v1.0.71+)* The Copilot CLI includes a built-in GitHub MCP server that provides access to GitHub APIs. You can configure which toolsets and individual tools are enabled, and persist those preferences to `settings.json` so they apply automatically to every session:
+
+```json
+{
+  "githubMcpToolsets": ["issues", "pull_requests", "repos"],
+  "githubMcpTools": ["create_issue", "list_pull_requests"]
+}
+```
+
+- **`githubMcpToolsets`** — Enable entire groups of related GitHub tools (e.g., `"issues"`, `"pull_requests"`, `"repos"`, `"code_security"`, `"actions"`)
+- **`githubMcpTools`** — Enable or restrict specific individual tools within those toolsets
+
+To enable **all** GitHub MCP tools at once, use the `--add-github-mcp-tool "*"` flag:
+
+```bash
+copilot --add-github-mcp-tool "*" -p "Review all open pull requests and summarize them"
+```
+
+Persisting this configuration avoids having to re-select toolsets in every new session and makes it easy to check into your repository's `.github/copilot/settings.json` so the whole team gets the same GitHub tool access.
 
 ### Common MCP Server Configurations
 
