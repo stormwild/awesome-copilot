@@ -3,7 +3,7 @@ title: 'Working with Canvas Extensions'
 description: 'Create and iterate on GitHub Copilot app canvases using /create-canvas, then shape them into reusable project or personal extensions.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-06-17
+lastUpdated: 2026-07-15
 estimatedReadingTime: '8 minutes'
 tags:
   - copilot-app
@@ -110,6 +110,24 @@ Reference implementations:
 - SDK docs/source: [`joinSession`](https://github.com/github/copilot-sdk/blob/main/nodejs/docs/extensions.md), [`createCanvas`](https://github.com/github/copilot-sdk/blob/main/nodejs/src/canvas.ts)
 - Repo example: [`extensions/backlog-swipe-triage/extension.mjs`](https://github.com/github/awesome-copilot/blob/main/extensions/backlog-swipe-triage/extension.mjs)
 - Persistent user-scoped path example: [`extensions/chromium-control-canvas/extension.mjs`](https://github.com/github/awesome-copilot/blob/main/extensions/chromium-control-canvas/extension.mjs)
+
+## Canvas Support in the CLI
+
+*(v1.0.71+)* Canvas extensions are no longer limited to the Copilot app. The CLI now supports **extension-driven canvas interactions**, allowing canvas extensions to surface interactive surfaces directly in terminal sessions.
+
+When a canvas extension is active in a CLI session, the extension's `extension.mjs` can call canvas capabilities and receive UI events just as it would in the app — enabling the same bidirectional surface model in a terminal context. This means:
+
+- Canvas extensions that previously required the Copilot app can now also be invoked from CLI sessions
+- Terminal-based automation workflows can use canvas surfaces for structured output and interaction
+- The same extension folder works across both the app and the CLI without modification
+
+To use a canvas extension in the CLI, install the plugin that contains it and invoke the extension as usual:
+
+```
+/plugin canvas-extension-name
+```
+
+> **Note**: Full rendering of visual canvas UIs requires terminal support for rich output (such as inline images or custom rendering). In terminals without these capabilities, the canvas extension's data and interaction model remains functional, but the visual representation may be limited.
 
 ## Examples from this repository
 
