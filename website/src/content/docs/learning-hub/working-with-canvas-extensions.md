@@ -3,18 +3,19 @@ title: 'Working with Canvas Extensions'
 description: 'Create and iterate on GitHub Copilot app canvases using /create-canvas, then shape them into reusable project or personal extensions.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-06-17
-estimatedReadingTime: '8 minutes'
+lastUpdated: 2026-07-16
+estimatedReadingTime: '9 minutes'
 tags:
   - copilot-app
   - canvases
   - canvas-extensions
+  - copilot-cli
 relatedArticles:
   - ./github-copilot-app.md
   - ./agents-and-subagents.md
   - ./using-copilot-coding-agent.md
 prerequisites:
-  - Access to the GitHub Copilot app
+  - Access to the GitHub Copilot app or GitHub Copilot CLI (v1.0.71+)
   - Basic familiarity with GitHub Copilot agent sessions
 ---
 
@@ -132,6 +133,23 @@ Treat the first `/create-canvas` result as version one. Then refine in-place:
 - Keep capability names clear and action-oriented
 
 The fastest loop is: **use the canvas**, note friction, and ask the agent for a targeted update.
+
+## Canvas extensions in Copilot CLI
+
+*(v1.0.71+)* Canvas support is also available directly in **GitHub Copilot CLI**, not just the Copilot app. This lets you work with extension-driven interactive canvases from your terminal workflow, without launching the desktop app.
+
+When a canvas extension is loaded in the CLI, the extension's interactive surface appears in the CLI's right-side panel (where the sidebar and worktree views also live). Agent-callable canvas capabilities work the same way as in the app — the extension registers its actions and the agent can invoke them during a session.
+
+### How to use canvas extensions in the CLI
+
+1. Install or load the canvas extension (via a plugin, `--plugin-dir`, or the extensions directory).
+2. Start an interactive Copilot CLI session in the relevant repository.
+3. The canvas panel activates automatically when a canvas-capable extension is present.
+4. Interact through the panel UI while the agent works — the agent can read and update the canvas state in real time.
+
+Canvas extensions that target the CLI follow the same `extension.mjs` + `joinSession`/`createCanvas` contract described above. Project-scoped extensions in `.github/extensions/` are auto-discovered; user-scoped ones in `~/.copilot/extensions/` are loaded for all sessions.
+
+> **Note**: Canvas UI rendering in the CLI is optimised for terminal display. Extensions that rely on browser-specific APIs or rich web layouts may render differently than in the Copilot app. Test your extension in both surfaces if you plan to support them.
 
 ## Next steps
 

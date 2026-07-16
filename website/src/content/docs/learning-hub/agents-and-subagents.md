@@ -3,7 +3,7 @@ title: 'Agents and Subagents'
 description: 'Learn how delegated subagents differ from primary agents, when to use them, and how to launch them in VS Code and Copilot CLI.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-01
+lastUpdated: 2026-07-16
 estimatedReadingTime: '9 minutes'
 tags:
   - agents
@@ -210,7 +210,23 @@ No. They can run sequentially when one step depends on another, or in parallel w
 
 **Can I control how many subagents run simultaneously?**
 
-Yes. In v1.0.66+, usage-based billing users can configure **subagent concurrency and depth limits** directly from `/settings`. The concurrency limit controls how many subagents run in parallel; the depth limit controls how many levels deep delegation can chain (preventing runaway recursive subagent trees). These settings give you predictable control over resource consumption during complex orchestrated tasks.
+Yes. In v1.0.66+, usage-based billing users can configure **subagent concurrency and depth limits** directly from `/settings`. The concurrency limit controls how many subagents run in parallel; the depth limit controls how many levels deep delegation can chain (preventing runaway recursive subagent trees).
+
+As of v1.0.71, the **default maximum subagent nesting depth is 4** (reduced from 6). Usage-based billing users can raise this up to 128 via the `subagents.maxDepth` setting:
+
+```json
+{
+  "subagents": {
+    "maxDepth": 6
+  }
+}
+```
+
+A lower default helps prevent runaway recursive delegation on complex tasks. If you have deep orchestration chains that require more than 4 levels, increase `subagents.maxDepth` explicitly.
+
+**Can I interact with a subagent while it's running?**
+
+Yes. As of v1.0.72+, **multi-turn subagents are always enabled** — you can send follow-up messages to a running subagent without waiting for it to complete its initial task. This makes it possible to steer or clarify a subagent's direction mid-run rather than waiting for it to finish and then starting a new delegation.
 
 ## Next steps
 
