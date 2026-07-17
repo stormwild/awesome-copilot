@@ -3,7 +3,7 @@ title: 'Getting Started with the GitHub Copilot app'
 description: 'Learn about the GitHub Copilot app, a desktop experience built for agent-native development. Understand its key features and who it''s for.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-06-17
+lastUpdated: 2026-07-17
 estimatedReadingTime: '8 minutes'
 tags:
   - copilot-app
@@ -66,6 +66,15 @@ Each session the Copilot app creates runs in its own **git worktree**—a real, 
 - You can pick up a session from any device, on any worktree
 
 This makes it easy to dispatch multiple agents and trust they won't interfere with each other.
+
+#### Working with worktrees from Copilot CLI
+
+When using Copilot CLI alongside the app, two commands let you manage worktree context:
+
+- **`/worktree`** — creates a new worktree from the current branch and switches to it, **leaving your uncommitted changes behind** in the original worktree. Use this when you want to start fresh work in isolation without losing your current in-progress edits.
+- **`/move`** — creates a new worktree and **carries your uncommitted changes into it**. Use this when you want to continue your current work in a dedicated isolated branch.
+
+*(This split was introduced in v1.0.71; earlier versions had a single `/worktree` command that behaved like `/move`.)*
 
 ### Canvases
 
@@ -186,6 +195,8 @@ open "ghapp://session/new?repo=owner/repo&mode=plan"
 - `branch` (mutually exclusive with `pr`)
 - `prompt` (URL-encoded text)
 - `mode` (`plan`, `interactive`, or `autopilot`)
+
+**Plan mode note**: When a session starts in `plan` mode, the agent produces a plan but is **hard-blocked from modifying the workspace** — it cannot edit files or run mutating shell commands. This is a safety guarantee introduced in v1.0.71: you review and approve the plan before any code changes are made. MCP and external tool calls are still allowed in plan mode, but all built-in workspace mutators (file edits, shell writes, built-in PR/issue creation) are blocked until you switch the session to `interactive` or `autopilot`.
 
 #### Other useful deep links
 
