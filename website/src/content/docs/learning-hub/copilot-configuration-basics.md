@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-18
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -541,11 +541,19 @@ The `/cd` command changes the working directory for the current session. Since v
 
 This is useful when you have multiple backgrounded sessions each focused on a different project directory.
 
-The `/worktree` command (v1.0.61+, also aliased `/move`) creates a new git worktree and switches into it, moving any uncommitted changes along. This lets you start working on a parallel branch without leaving your current terminal session:
+The `/worktree` command (v1.0.61+) creates a new git worktree and switches into it, **leaving your uncommitted changes behind** in the original worktree. This lets you start working on a parallel branch from a clean state without stashing or committing your in-progress work:
 
 ```
 /worktree my-feature-branch
 ```
+
+If you want to **carry your uncommitted changes** into the new worktree, use the separate `/move` command (split from `/worktree` in v1.0.71):
+
+```
+/move my-feature-branch
+```
+
+> **Breaking change (v1.0.71)**: Before v1.0.71, `/worktree` and `/move` were aliases for the same command (both moved uncommitted changes). In v1.0.71 they were split: `/worktree` now always leaves uncommitted changes behind, and `/move` carries them. Update any scripts or habits that relied on the old aliased behavior.
 
 In v1.0.66+, you can pass a task description to `/worktree` to name the branch from the task and immediately run the task as the first prompt in the new worktree — all in one step:
 

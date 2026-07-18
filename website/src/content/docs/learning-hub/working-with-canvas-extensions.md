@@ -3,7 +3,7 @@ title: 'Working with Canvas Extensions'
 description: 'Create and iterate on GitHub Copilot app canvases using /create-canvas, then shape them into reusable project or personal extensions.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-06-17
+lastUpdated: 2026-07-18
 estimatedReadingTime: '8 minutes'
 tags:
   - copilot-app
@@ -121,6 +121,33 @@ Use these extension folders as concrete references:
 - [`Agent Arcade`](../../extensions/#agent-arcade-canvas): retro arcade canvas with agent-callable controls for choosing or restarting mini-games while agents work.
 
 These examples show different complexity levels, from focused workflow boards to richer UI + automation integrations.
+
+## Canvas support in GitHub Copilot CLI
+
+Starting with **v1.0.71**, canvas extensions are no longer limited to the GitHub Copilot app — you can now use and interact with canvases from the GitHub Copilot CLI. The CLI handles extension-driven canvas interactions using the same canvas SDK contract (the `joinSession`/`createCanvas` pattern) that the app uses.
+
+This means you can:
+
+- **Run canvas-backed agent sessions from the terminal** — any extension that exposes canvas capabilities works in CLI sessions, not just in the app.
+- **Mix terminal and app workflows** — build a canvas in the app, then drive it from a CLI prompt mode (`copilot -p`) pipeline for automation.
+
+### How CLI canvas sessions work
+
+When a canvas extension is active in a CLI session, the agent can call canvas capabilities the same way it does in the app. UI rendering in the terminal is text-based (no visual panel), but all agent-callable canvas actions and state updates work normally.
+
+```bash
+# Start a session with a locally loaded canvas extension
+copilot --plugin-dir ./my-canvas-extension
+
+# In prompt mode with a canvas-aware agent
+copilot -p "use the triage canvas to label and close all open bugs"
+```
+
+This unlocks a useful pattern: author and iterate on a canvas in the app's visual panel, then automate repetitive workflows using the same extension from a CI pipeline or terminal script.
+
+### Canvas scope remains the same
+
+Canvas extension scope (project at `.github/extensions/` vs. user at `~/.copilot/extensions/`) is unchanged. Canvases scoped to a repository work in both app and CLI sessions for that project.
 
 ## Iterating after first creation
 
