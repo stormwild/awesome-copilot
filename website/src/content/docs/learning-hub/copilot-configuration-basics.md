@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-20
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -447,6 +447,15 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 
 **Auto mode and server-side model routing** (v1.0.43+): When you select **Auto** as your model, the CLI uses server-side model routing for real-time model selection. Instead of locking in a single model at session start, Auto mode evaluates each request and routes it to the most appropriate model dynamically. This means straightforward questions can be handled by a faster model while complex reasoning tasks are automatically escalated — without you needing to switch models manually.
 
+**Per-session model override** (v1.0.72+): Use `/model --session` (or the `-s` shorthand) to change the model, reasoning effort, or context window for only the current session, leaving your global settings unchanged:
+
+```
+/model --session         # open the model picker for the current session only
+/model -s claude-opus-4  # switch to a specific model for this session only
+```
+
+This is useful when you want to use a more capable (or more economical) model for a single task without permanently changing your default settings. Once you end the session and start a new one, your global model preference is restored.
+
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
 
 ### CLI Session Commands
@@ -458,6 +467,14 @@ The `/settings` command (v1.0.61+) opens an interactive dialog to browse and edi
 ```
 
 The settings dialog supports search — type to filter settings by name. Changes take effect immediately.
+
+**Interactive shell shortcut** (v1.0.71+): Type `$` at the prompt to instantly open an interactive shell in the current session directory, without leaving your Copilot session. This is handy for running quick commands, inspecting files, or testing something on the fly, then returning to the conversation. Enable it first with:
+
+```
+/settings shellShortcut on
+```
+
+It is off by default. Once enabled, typing `$` at the start of your message drops you into a shell. Exit the shell to return to the Copilot prompt.
 
 *(v1.0.70+)* The `/settings` command and the `/model` command both support **`--repo` and `--local` flags** for explicitly scoping which layer of settings you want to view or edit:
 
@@ -541,7 +558,7 @@ The `/cd` command changes the working directory for the current session. Since v
 
 This is useful when you have multiple backgrounded sessions each focused on a different project directory.
 
-The `/worktree` command (v1.0.61+, also aliased `/move`) creates a new git worktree and switches into it, moving any uncommitted changes along. This lets you start working on a parallel branch without leaving your current terminal session:
+The `/worktree` command (v1.0.61+) creates a new git worktree and switches into it, **leaving your uncommitted changes behind** in the original worktree. This is useful when you want to start a fresh parallel task without disturbing in-progress work:
 
 ```
 /worktree my-feature-branch
@@ -555,7 +572,15 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
 
-After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
+The `/move` command (v1.0.71+) is a companion to `/worktree` that creates a new worktree and **carries your uncommitted changes with you** into it. Use `/move` when you realize your current work-in-progress belongs on a new branch and want to take those changes along:
+
+```
+/move my-feature-branch
+```
+
+> **v1.0.71 change**: Before v1.0.71, `/worktree` and `/move` were aliases of the same command (both moved uncommitted changes to the new worktree). They are now distinct: use `/worktree` to start fresh and use `/move` to carry your work-in-progress to a new branch.
+
+In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
 
 The `/every` command (also available as `/loop` since v1.0.64) schedules a recurring prompt to run automatically at a specified interval. The companion `/after` command runs a prompt once after a specified delay. Both are useful for self-paced automation — polling for results, periodically summarizing progress, or triggering other slash commands on a timer:
 
