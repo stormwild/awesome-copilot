@@ -3,7 +3,7 @@ title: 'Automating with Hooks'
 description: 'Learn how to use hooks to automate lifecycle events like formatting, linting, and governance checks during Copilot agent sessions.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-20
 estimatedReadingTime: '8 minutes'
 tags:
   - hooks
@@ -101,6 +101,29 @@ Hooks can trigger on several lifecycle events:
 | `errorOccurred` | An error occurs during agent execution | Log errors for debugging, send notifications, track error patterns |
 
 > **Key insight**: The `preToolUse` hook is the most powerful — it can **approve or deny** individual tool executions. This enables fine-grained security policies like blocking specific shell commands or requiring approval for sensitive file operations.
+
+### agentStop stop_hook_active flag (v1.0.72+)
+
+If an `agentStop` hook always returns a blocking result, the CLI will no longer loop indefinitely. After 8 consecutive blocks, the CLI forces the turn to end and passes a `stop_hook_active: true` flag in the hook's input payload. This lets your hook detect when it is running inside a forced-continuation scenario and self-limit:
+
+```bash
+#!/usr/bin/env bash
+INPUT=$(cat)
+
+# Check if we're in a forced-continuation (the CLI already blocked 8 times)
+STOP_HOOK_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false')
+
+if [ "$STOP_HOOK_ACTIVE" = "true" ]; then
+  # Don't block — let the CLI stop normally
+  echo '{"continue": true}'
+  exit 0
+fi
+
+# ... your normal agentStop logic here
+echo '{"continue": false, "decision": "block", "reason": "Pending lint errors"}'
+```
+
+This guard prevents runaway hook loops and is especially important for hooks that enforce quality gates on every turn.
 
 ### sessionStart additionalContext
 

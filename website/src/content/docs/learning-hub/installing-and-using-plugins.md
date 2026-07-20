@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-20
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -199,6 +199,29 @@ Or from an interactive session:
 ```
 
 > **Deprecation notice**: Installing plugins directly from a GitHub repository URL, raw URL, or local file path (e.g., `copilot plugin install github/awesome-copilot`) is deprecated and will be removed in a future release. Use marketplace-based installation instead.
+
+### Installing Individual Skills (v1.0.72+)
+
+You can also install individual skills directly from a file, URL, or directory — without needing a full plugin:
+
+```bash
+# Install a skill from a local directory
+copilot plugins install --skill ./my-skill/
+
+# Install a skill from a URL
+copilot plugins install --skill https://example.com/skills/my-skill.zip
+
+# Install a skill into the repository scope (rather than user scope)
+copilot plugins install --skill ./my-skill/ --scope project
+```
+
+Skills installed this way are available in skill pickers and can be invoked just like skills from a plugin. Use `--scope project` to install into the current repository (`.github/skills/`) so all contributors share the same skill, or omit `--scope` to install at the user level (`~/.copilot/skills/`).
+
+To remove a skill installed this way:
+
+```bash
+copilot plugins remove --skill my-skill-name
+```
 
 ### From VS Code
 
