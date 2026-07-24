@@ -3,7 +3,7 @@ title: 'Working with Canvas Extensions'
 description: 'Create and iterate on GitHub Copilot app canvases using /create-canvas, then shape them into reusable project or personal extensions.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-06-17
+lastUpdated: 2026-07-24
 estimatedReadingTime: '8 minutes'
 tags:
   - copilot-app
@@ -18,9 +18,18 @@ prerequisites:
   - Basic familiarity with GitHub Copilot agent sessions
 ---
 
-Canvas extensions give you shared, interactive work surfaces inside the GitHub Copilot app. Instead of keeping all progress in chat, you can move work into a visible artifact (such as a board, document, checklist, or browser-oriented surface) that both people and agents can update.
+Canvas extensions give you shared, interactive work surfaces inside the GitHub Copilot app and GitHub Copilot CLI. Instead of keeping all progress in chat, you can move work into a visible artifact (such as a board, document, checklist, or browser-oriented surface) that both people and agents can update.
 
 This guide explains what canvases can do, how to create one with `/create-canvas`, and how to use patterns from this repository as reference implementations.
+
+## Canvas support: app and CLI
+
+Canvas extensions work in two environments:
+
+- **GitHub Copilot app** — the primary canvas experience. Use `/create-canvas` in an agent session to generate, open, and iterate on canvas extensions in the right panel.
+- **GitHub Copilot CLI** *(v1.0.71+)* — canvas extensions that use extension-driven interactions are also supported in the CLI. Extensions loaded via `--plugin-dir` or installed plugins that include canvas capabilities work within CLI sessions.
+
+The app is the easiest starting point for creating and iterating on canvases. The CLI integration means your canvas extensions remain usable across both environments without modification.
 
 ## What canvases can do
 

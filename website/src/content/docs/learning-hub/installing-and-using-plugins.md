@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-24
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -73,6 +73,14 @@ The `plugin.json` manifest declares what the plugin contains:
   ]
 }
 ```
+
+### Open Plugin Spec v1 and `mcp.json` Support
+
+*(v1.0.74+)* GitHub Copilot CLI now supports **Open Plugin Spec v1** plugin manifests. This is an emerging open standard for plugin manifests, allowing plugins authored for compatible tools to work with Copilot CLI without conversion.
+
+Additionally, Copilot now recognizes **`mcp.json`** configuration files for MCP server definitions. If your project or plugin already uses `mcp.json` (a common convention across AI tools), Copilot will pick it up automatically alongside `.mcp.json` and `.github/mcp.json`.
+
+This means plugins and MCP configurations authored for other tools can be used directly with GitHub Copilot CLI without any reformatting.
 
 ## Why Use Plugins?
 
@@ -220,6 +228,31 @@ copilot plugin marketplace update
 
 # Remove a plugin
 copilot plugin uninstall my-plugin
+```
+
+### Installing Individual Skills
+
+*(v1.0.72+)* You can install a single skill directly from a file, URL, or directory — without packaging it as a full plugin:
+
+```bash
+# Install a skill from a local directory
+copilot plugins install --skill ./my-skill/
+
+# Install a skill from a URL
+copilot plugins install --skill https://example.com/path/to/skill.zip
+
+# Install a skill into the current repository (project scope)
+copilot plugins install --skill ./my-skill/ --scope project
+```
+
+This is useful when you want to add a single skill from this repository or a shared source without installing an entire plugin bundle. Skills installed this way integrate like any other — they're auto-loaded by the coding agent when relevant.
+
+You can also manage skills by name using the `--skill` flag on other plugin commands:
+
+```bash
+copilot plugins enable --skill my-skill
+copilot plugins disable --skill my-skill
+copilot plugins remove --skill my-skill
 ```
 
 ### Loading Plugins from a Local Directory
