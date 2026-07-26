@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-26
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -223,7 +223,7 @@ The `~/.agents/skills/` path aligns with the VS Code GitHub Copilot for Azure ex
 
 | Field | Description | Example values |
 |-------|-------------|----------------|
-| `model` | The AI model to use for this repository | `"claude-sonnet-4"`, `"gpt-4.1"`, `"claude-sonnet-5"` |
+| `model` | The AI model to use for this repository | `"claude-sonnet-4"`, `"gpt-4.1"`, `"claude-sonnet-5"`, `"claude-opus-5"`, `"gemini-3.6-flash"` |
 | `effortLevel` | Reasoning effort level | `"low"`, `"medium"`, `"high"` |
 | `contextTier` | How much context to include | `"default"`, `"full"` |
 
@@ -448,6 +448,21 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 **Auto mode and server-side model routing** (v1.0.43+): When you select **Auto** as your model, the CLI uses server-side model routing for real-time model selection. Instead of locking in a single model at session start, Auto mode evaluates each request and routes it to the most appropriate model dynamically. This means straightforward questions can be handled by a faster model while complex reasoning tasks are automatically escalated — without you needing to switch models manually.
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
+
+**Per-session model override** (v1.0.72+): Use `/model --session` (or `/model -s`) to change the model, reasoning effort, or context window **for just the current session**, without affecting your global or repository settings. This is useful for experimenting with a different model on a single task — when you start a new session, your normal settings apply again:
+
+```
+/model --session          # open the model picker scoped to this session
+/model --session opus     # switch to the latest Opus model for this session only
+```
+
+**Per-mode model for Plan mode** (v1.0.74+): Use `/model plan` (or `/model --plan`) to pick a model that is used **only while you are in plan mode**. This lets you use a cheaper or faster model for planning without changing your session model for implementation:
+
+```
+/model plan               # open the model picker for plan mode
+/model plan claude-haiku  # use a fast model for planning
+/model plan off           # clear the plan-mode model override (reverts to session model)
+```
 
 ### CLI Session Commands
 
