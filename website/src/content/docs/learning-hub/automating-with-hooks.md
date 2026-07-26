@@ -3,7 +3,7 @@ title: 'Automating with Hooks'
 description: 'Learn how to use hooks to automate lifecycle events like formatting, linting, and governance checks during Copilot agent sessions.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-26
 estimatedReadingTime: '8 minutes'
 tags:
   - hooks
@@ -95,6 +95,20 @@ Hooks can trigger on several lifecycle events:
 | `postToolUseFailure` | When a tool call **fails with an error** | Log errors for debugging, send failure alerts, track error patterns |
 | `PermissionRequest` | When the CLI shows a **permission prompt** to the user | Programmatically approve or deny permission requests, enable auto-approval in CI/headless environments |
 | `agentStop` | Main agent finishes responding to a prompt | Run final linters/formatters, validate complete changes |
+
+> **Preventing `agentStop` infinite loops** (v1.0.72+): If an `agentStop` hook always exits with a non-zero code, it would block the agent indefinitely. The CLI protects against this by ending the turn after **8 consecutive blocks**, and passes a `stop_hook_active` flag in the JSON input to the hook script when it is in a forced-continuation state. Your hook can inspect this flag to self-limit — for example, skipping expensive checks when the agent has already been stopped and restarted multiple times:
+>
+> ```bash
+> #!/usr/bin/env bash
+> INPUT=$(cat)
+> # Self-limit when the CLI is forcing continuation after repeated blocks
+> if echo "$INPUT" | jq -e '.stop_hook_active == true' > /dev/null 2>&1; then
+>   echo "Skipping checks: stop_hook_active is set" >&2
+>   exit 0
+> fi
+> # Normal lint check
+> npx eslint . --max-warnings 0
+> ```
 | `preCompact` | Before the agent compacts its context window | Save a snapshot, log compaction event, run summary scripts |
 | `subagentStart` | A subagent is spawned by the main agent | Inject additional context into the subagent's prompt, log subagent launches |
 | `subagentStop` | A subagent completes before returning results | Audit subagent outputs, log subagent activity |
