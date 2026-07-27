@@ -3,7 +3,7 @@ title: 'Building Custom Agents'
 description: 'Learn how to create specialized GitHub Copilot agents with custom personas, tool integrations, and domain expertise.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-09
+lastUpdated: 2026-07-27
 estimatedReadingTime: '10 minutes'
 tags:
   - agents
@@ -140,6 +140,8 @@ Present findings as:
 - 🟢 **Good**: Patterns that follow our conventions
 ````
 
+> **Relative links in agent instructions (v1.0.73+)**: When your agent's Markdown instructions reference other files using relative paths (e.g., `[see our style guide](./style-guide.md)`), those links are now resolved relative to the agent file's location rather than the working directory. This makes it safe to reference companion documents stored alongside the agent file in `.github/agents/`.
+
 ## Design Patterns
 
 ### The Domain Expert
@@ -254,13 +256,18 @@ The agent can then query your database, analyze query plans, and suggest optimiz
 
 | Scenario | Recommended Model |
 |----------|-------------------|
-| Most demanding reasoning, security review | Claude Sonnet 5 *(v1.0.67+)* |
+| Most demanding reasoning, security review | Claude Opus 5 *(v1.0.75+)* or Claude Sonnet 5 *(v1.0.67+)* |
 | Complex reasoning, analysis | Claude Sonnet 4 |
 | Code generation, tool-driven agentic work | GPT-5.6 *(v1.0.70+)* |
 | Code generation, refactoring | GPT-4.1 |
 | Code-specialized tasks, large context | kimi-k2.7-code *(v1.0.68+)* |
+| Fast responses with good capability | gemini-3.6-flash *(v1.0.74+)* |
 | Quick analysis, simple tasks | Claude Haiku or GPT-4.1-mini |
 | Large codebase understanding | Models with larger context windows |
+
+> **Per-session model override (v1.0.72+)**: Use `/model --session` (or `/model -s`) to change the model, reasoning effort, or context window for just the current session without altering your global settings. This is useful when you want to switch to a heavier model for a complex refactoring session.
+
+> **Plan mode model (v1.0.74+)**: Use `/model plan` (or `/model --plan`) to pick a separate model used only during plan mode. Pass a model ID to set it, `off` to clear it, or no argument to open the picker. The session's regular model resumes when you leave plan mode.
 
 ### Organizing Agents in Your Repository
 
