@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-28
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -73,6 +73,8 @@ The `plugin.json` manifest declares what the plugin contains:
   ]
 }
 ```
+
+*(v1.0.74+)* Copilot CLI also supports the **Open Plugin Spec v1** format for plugin manifests and `mcp.json` configuration files. This means plugins authored against the Open Plugin Spec standard are compatible with Copilot CLI without any conversion — you can install them directly from a marketplace or local path and their agents, skills, and MCP server configurations will be recognized automatically.
 
 ## Why Use Plugins?
 
@@ -220,6 +222,26 @@ copilot plugin marketplace update
 
 # Remove a plugin
 copilot plugin uninstall my-plugin
+```
+
+You can also manage plugins, MCP servers, and skills from within an **interactive Copilot session** using `/plugins` commands *(v1.0.72+)*:
+
+```
+/plugins list                              # list installed plugins
+/plugins install my-plugin@awesome-copilot # install a plugin
+/plugins update my-plugin                  # update a plugin
+/plugins uninstall my-plugin               # remove a plugin
+/plugins enable my-plugin                  # enable a disabled plugin
+/plugins disable my-plugin                 # disable a plugin without removing it
+/plugins install --skill my-skill@market   # install a skill directly
+/plugins help                              # show all /plugins sub-commands
+```
+
+The `enable`/`disable`/`remove` verbs accept an optional kind qualifier via `--plugin`, `--mcp`, or `--skill` flags so you can target a specific component type when names might overlap:
+
+```
+/plugins disable --mcp my-server           # disable just the MCP server named my-server
+/plugins enable --skill my-skill           # re-enable a disabled skill
 ```
 
 ### Loading Plugins from a Local Directory
