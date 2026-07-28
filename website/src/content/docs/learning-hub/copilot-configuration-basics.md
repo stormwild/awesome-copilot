@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-28
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -469,6 +469,17 @@ The settings dialog supports search — type to filter settings by name. Changes
 ```
 
 These flags mirror the **Repo** and **Repo (local)** scope tabs available in the `/settings` dashboard (v1.0.71+), making it easier to manage per-repository vs. user-global configuration without ambiguity. In v1.0.71+, the `/settings` dashboard also shows **Repo** and **Repo (local)** tabs alongside the existing user-level view, giving you a unified place to see which settings are applied at each layer.
+
+*(v1.0.74+)* You can now pick a **separate model specifically for plan mode** using `/model plan`. This lets you use a fast, reasoning-optimized model when planning without affecting your session model for execution:
+
+```
+/model plan                   # open the model picker for plan mode
+/model plan claude-opus-5     # set a specific model for plan mode
+/model --plan claude-opus-5   # equivalent flag syntax
+/model plan off               # clear the plan-mode model (reverts to session model)
+```
+
+When you leave plan mode, Copilot automatically reverts to the session model. This is useful when you want a more capable model (e.g., Claude Opus 5 or a deep-thinking model) to reason through a plan, then a faster model to execute it.
 
 GitHub Copilot CLI has two commands for managing session state, with distinct behaviours:
 
