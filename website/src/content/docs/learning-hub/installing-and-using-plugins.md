@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-29
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -73,6 +73,10 @@ The `plugin.json` manifest declares what the plugin contains:
   ]
 }
 ```
+
+### Open Plugin Spec v1 Support *(v1.0.74+)*
+
+GitHub Copilot CLI also supports the [Open Plugin Spec v1](https://openpluginsspec.org/) manifest format and `mcp.json` configuration files. This means plugins written to the Open Plugin Spec standard are compatible with Copilot CLI without additional conversion. If a plugin folder contains an `mcp.json` file, the CLI reads it to configure MCP server integrations automatically alongside the plugin's other components.
 
 ## Why Use Plugins?
 
@@ -192,13 +196,37 @@ Reference a plugin by name and marketplace:
 copilot plugin install database-data-management@awesome-copilot
 ```
 
-Or from an interactive session:
+Or from an interactive session (note: `/plugins` with an "s" is an alias for `/plugin`):
 
 ```
 /plugin install database-data-management@awesome-copilot
+/plugins install database-data-management@awesome-copilot  # alias (v1.0.72+)
 ```
 
 > **Deprecation notice**: Installing plugins directly from a GitHub repository URL, raw URL, or local file path (e.g., `copilot plugin install github/awesome-copilot`) is deprecated and will be removed in a future release. Use marketplace-based installation instead.
+
+### Installing Individual Skills
+
+*(v1.0.72+)* You can also install individual skills without wrapping them in a full plugin, using the `--skill` flag:
+
+```bash
+# Install a skill from a local directory
+copilot plugins install --skill ./my-skills/generate-tests/
+
+# Install a skill from a URL
+copilot plugins install --skill https://example.com/skills/generate-tests.zip
+
+# Install to the project scope (adds to repository .github/skills/)
+copilot plugins install --skill ./my-skills/generate-tests/ --scope project
+```
+
+And remove skills installed this way:
+
+```bash
+copilot plugins remove --skill my-skill-name
+```
+
+This is useful when you only need a single skill rather than an entire plugin.
 
 ### From VS Code
 

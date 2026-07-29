@@ -3,7 +3,7 @@ title: 'Creating Effective Skills'
 description: 'Master the art of writing reusable, shareable skill folders that deliver consistent results across your team.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-29
 estimatedReadingTime: '9 minutes'
 tags:
   - skills
@@ -379,6 +379,14 @@ copilot skill list                      # list all currently loaded skills
 copilot skill add ./my-skill/           # add a skill from a local directory
 copilot skill add https://example.com/skill.zip  # add a skill from a URL
 copilot skill remove my-skill           # remove an installed skill by name
+```
+
+*(v1.0.72+)* You can also install and remove skills via the `plugins` subcommand — useful if you prefer a single command surface for all package management:
+
+```bash
+copilot plugins install --skill ./my-skill/     # install a skill
+copilot plugins install --skill https://example.com/skill.zip  # from URL
+copilot plugins remove --skill my-skill         # remove a skill
 ```
 
 You can also run `/skill` (or the existing `/skills`) inside an interactive session to see what's loaded. The `copilot skill` subcommand is the recommended way to install skills that aren't packaged inside a plugin.
