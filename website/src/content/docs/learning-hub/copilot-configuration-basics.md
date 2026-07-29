@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-29
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -448,6 +448,27 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 **Auto mode and server-side model routing** (v1.0.43+): When you select **Auto** as your model, the CLI uses server-side model routing for real-time model selection. Instead of locking in a single model at session start, Auto mode evaluates each request and routes it to the most appropriate model dynamically. This means straightforward questions can be handled by a faster model while complex reasoning tasks are automatically escalated — without you needing to switch models manually.
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
+
+**Plan-mode model** *(v1.0.74+)*: You can choose a different model specifically for [plan mode](https://docs.github.com/en/copilot/how-tos/copilot-cli/using-copilot/modes-and-slash-commands#plan-mode) using the `/model plan` command (or `/model --plan`). This is useful when you want a more powerful model for upfront planning while using a faster or cheaper model for execution:
+
+```
+/model plan                  # open the picker to choose a plan-mode model
+/model --plan claude-opus-5  # set a specific model for plan mode
+/model --plan off            # clear the plan-mode model and use the session model
+```
+
+The plan-mode model is active only during plan mode and reverts to the regular session model when you leave plan mode.
+
+**Session-scoped model** *(v1.0.74+)*: `/model --session` (shorthand `-s`) changes the model, reasoning effort, or context window for just the current session, without touching your global settings:
+
+```
+/model --session claude-opus-5     # use Opus 5 for this session only
+/model -s gemini-3.6-flash         # use Gemini 3.6 Flash for this session
+```
+
+This is ideal for one-off tasks where you want a different model without permanently changing your configuration.
+
+**Available models** include Claude Opus 5 *(v1.0.75+)*, Claude Sonnet 4.6, Claude Haiku 4.5, GPT-5.6 *(v1.0.70+)*, Gemini 3.6 Flash *(v1.0.74+)*, and others. Use `/model` to see the current list of available models for your plan.
 
 ### CLI Session Commands
 
