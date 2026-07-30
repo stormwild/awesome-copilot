@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-30
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -449,6 +449,22 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
 
+**Recently added models** (v1.0.74–v1.0.76): The following models became available in late July 2026:
+
+| Model | Added in | Notes |
+|-------|----------|-------|
+| `gemini-3.6-flash` | v1.0.74 | Google's fast Gemini model |
+| `claude-opus-5` | v1.0.75 | Anthropic's most capable Opus model |
+| `grok-4.5` | v1.0.76 | xAI's Grok model |
+
+**Plan mode model** (v1.0.74+): Use `/model plan` (or `/model --plan`) to set a separate model for plan mode. Pass a model ID to set it, `off` to clear, or omit the ID to open the picker. The model automatically reverts to your session model when you leave plan mode:
+
+```
+/model plan claude-opus-5    # use Opus 5 while planning
+/model plan off              # clear the plan-mode model override
+/model --plan                # open the picker to choose a plan model
+```
+
 ### CLI Session Commands
 
 The `/settings` command (v1.0.61+) opens an interactive dialog to browse and edit all user settings in one place. Use it to discover available settings, toggle options, and update values without manually editing your config file:
@@ -724,6 +740,18 @@ gh copilot --effort high "Refactor the authentication module"
 ```
 
 Accepted values are `low`, `medium`, and `high`. You can also set a default via the `effortLevel` config setting.
+
+### Logging In
+
+Run `copilot login` to authenticate with GitHub. As of v1.0.77, the **browser-based (web) OAuth flow** is the default on local interactive terminals — your browser opens automatically and you approve access with a click:
+
+```bash
+copilot login          # default: browser-based OAuth (local terminals)
+copilot login --web-flow     # force browser OAuth
+copilot login --device-code  # force device code (remote/headless terminals)
+```
+
+On remote or headless terminals (SSH, CI), the device code flow remains the default. You can also pick a flow interactively with the `/login` command from inside a session.
 
 ### CLI Startup Flags
 

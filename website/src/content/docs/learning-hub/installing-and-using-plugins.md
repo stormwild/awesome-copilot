@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-30
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -36,6 +36,23 @@ A plugin bundles one or more of the following components:
 | **Extensions** | IDE extensions installable via the plugin marketplace (v1.0.62+) | `extensions/` |
 
 A plugin might include all of these or just one — for example, a plugin could provide a single specialized agent, or an entire development toolkit with multiple agents, skills, hooks, and MCP server configurations working together.
+
+### Open Plugin Spec and mcp.json
+
+*(v1.0.74+)* GitHub Copilot CLI supports **Open Plugin Spec v1** manifests and `mcp.json` configuration files. This means plugins authored to the open standard are fully compatible with Copilot CLI without any translation layer. An `mcp.json` in the plugin root (or in `.github/`) can declare MCP server dependencies that Copilot automatically loads when the plugin is active:
+
+```json
+{
+  "mcpServers": {
+    "my-tool": {
+      "command": "npx",
+      "args": ["-y", "my-mcp-server"]
+    }
+  }
+}
+```
+
+This interoperability means you can install plugins designed for other Open Plugin Spec–compatible tools and use them directly in Copilot CLI sessions.
 
 ### Example: What a Plugin Looks Like
 
@@ -221,6 +238,18 @@ copilot plugin marketplace update
 # Remove a plugin
 copilot plugin uninstall my-plugin
 ```
+
+### Enabling and Disabling Plugin Components
+
+*(v1.0.76+)* The `/plugins` command (from inside a session) shows all loaded plugins and lets you toggle their components on or off without uninstalling. This is useful when you want to temporarily suppress a specific agent, instruction set, hooks configuration, LSP server, or skill from a plugin without removing the plugin entirely:
+
+```
+/plugins                              # open the plugins panel
+/plugins disable my-plugin            # disable an entire plugin
+/plugins enable my-plugin             # re-enable it
+```
+
+Toggles take effect immediately for the current session and are persisted across sessions. This is particularly handy when debugging conflicts between plugins or when you want to A/B test plugin configurations.
 
 ### Loading Plugins from a Local Directory
 
