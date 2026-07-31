@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-07-31
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -221,6 +221,27 @@ copilot plugin marketplace update
 # Remove a plugin
 copilot plugin uninstall my-plugin
 ```
+
+### Enabling and Disabling Plugin Components
+
+*(v1.0.76+)* You can enable or disable individual components within an installed plugin — plugins, instructions, agents, LSP servers, and hooks — without uninstalling the plugin entirely. This is useful when you want to temporarily turn off a hook or agent while keeping the rest of a plugin active.
+
+Open the plugin manager in an interactive Copilot session:
+
+```
+/plugins
+```
+
+The `/plugins` panel lists all installed plugins and their components. Use the toggle controls to enable or disable individual items. Changes take effect immediately in the current session and persist across future sessions.
+
+**Common use cases for toggling**:
+
+- **Disable a hook** that's slowing down a session while you iterate quickly, then re-enable it for final review
+- **Turn off an agent** from a plugin that conflicts with a project-specific agent
+- **Disable an LSP server** for a language you're not working with in a particular project
+- **Enable only specific agents** from a multi-agent plugin to reduce noise in the agent picker
+
+> **Tip**: Disabling a component is reversible — use `/plugins` again to re-enable it. This is preferable to uninstalling a plugin when you only need to temporarily suppress part of its behavior.
 
 ### Loading Plugins from a Local Directory
 
