@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-01
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -415,6 +415,18 @@ Configuration file: `~/.copilot-cli/config.json`
 }
 ```
 
+#### Signing In
+
+Use `copilot login` to authenticate. As of v1.0.77, the **web (browser-based) OAuth flow** is the default on local interactive terminals — your browser opens automatically to complete the login. On remote or headless terminals, the device code flow remains the default. You can force a specific flow with flags:
+
+```bash
+copilot login              # web flow on local terminals, device code on headless
+copilot login --web-flow   # force browser-based OAuth
+copilot login --device-code  # force device code flow
+```
+
+Or pick interactively from within a session with the `/login` command.
+
 CLI settings use **camelCase** naming. Key settings added in recent releases:
 
 | Setting | Description |
@@ -429,8 +441,11 @@ CLI settings use **camelCase** naming. Key settings added in recent releases:
 | `proxy` | HTTP(S) proxy URL for all outbound CLI requests (e.g., `http://proxy.example.com:8080`) (v1.0.64+) |
 | `sessionLimits` | Restrict credit or turn usage for a session; limits apply across the current conversation and reset on `/clear` (v1.0.66+) |
 | `stayInAutopilot` | Keep the CLI in autopilot mode after an autopilot task completes, instead of returning to interactive mode (v1.0.69+) |
+| `allowDevToolCaches` | *(v1.0.78+, on by default)* Grants sandboxed builds access to toolchain caches, registries, and installs so builds work without extra setup. Set to `false` to opt out. |
 
 > **Note**: Older snake_case names (e.g., `include_gitignored`, `auto_updates_channel`) are still accepted for backward compatibility, but camelCase is now the preferred format.
+
+> **Settings validation (v1.0.78+)**: The CLI now warns on startup about unknown top-level keys in `settings.json` (e.g., a misspelled setting name) instead of silently ignoring them. If you see an "unknown key" warning, check for typos in your config file.
 
 In addition to the main config file, GitHub Copilot CLI reads two optional per-project files for repository-specific overrides:
 
@@ -532,6 +547,14 @@ The `/fork` command (v1.0.45+) copies the current session into a **new independe
 ```
 
 After forking, the new session is immediately active. Both sessions share the same history up to the fork point but accumulate changes independently from that moment forward. Use `/fork` to experiment with a risky refactor without abandoning your current working session. Since v1.0.47, forked sessions display their **origin session** name in the sessions dialog, making it easy to trace which session a fork came from.
+
+**Sessions sidebar** *(v1.0.76+, experimental)*: A new sidebar lets you manage multiple concurrent sessions without leaving the CLI. Switch between sessions, spawn new ones, and see each session's status at a glance. Enable it with:
+
+```
+/experimental on    # enable experimental features
+```
+
+Once experimental mode is active, the sidebar appears alongside your conversation pane. This is useful when running several parallel tasks (e.g., one session per feature branch) and you want an overview without switching context.
 
 The `/cd` command changes the working directory for the current session. Since v1.0.65, the working directory **persists when you resume a session** — if you restart the CLI and resume, you return to the same directory automatically. Changing directory also triggers discovery of custom agents in the new location, so switching to a different project loads its agents without a restart:
 
@@ -699,6 +722,14 @@ The `/allow-all` command (also accessible as `/yolo`) enables autopilot mode, wh
 /allow-all show   # check current allow-all status
 ```
 
+The `/permissions` command *(v1.0.78+)* provides a more granular way to switch between approval modes without using `/allow-all`. It lets you interactively select between interactive, autopilot, and plan modes in a single dialog:
+
+```
+/permissions      # open the permissions/approval mode picker
+```
+
+Use `/permissions` when you want a clear overview of your current approval mode or need to switch between modes mid-session. Unlike `/allow-all`, `/permissions` presents all available modes in one place.
+
 > **Note**: `/allow-all on` permissions persist after `/clear` starts a new session, so you don't need to re-enable it each time.
 
 > **ACP clients (v1.0.39+)**: ACP clients can also toggle allow-all mode programmatically via session configuration, without issuing a slash command. This is useful for automated pipelines that drive Copilot CLI through the ACP protocol.
@@ -713,7 +744,7 @@ Use `/autopilot` when you want to flip between supervised and unsupervised opera
 
 > **Enhanced autopilot (v1.0.64+)**: When autopilot mode is active — including when launched with `--autopilot` at startup or during automatic continuation turns — the agent automatically handles elicitation dialogs, `ask_user` prompts, sampling requests, and permission prompts without surfacing them as interactive dialogs. This means long-running automated sessions can proceed end-to-end without manual confirmation steps.
 
-> **Auto allow-all mode (v1.0.69+)**: In addition to the standard allow-all mode (which approves everything), the CLI now supports an **auto allow-all** mode that uses an LLM judge to evaluate each tool request. When enabled, the judge automatically approves requests it evaluates as acceptable, and asks you for manual confirmation only for requests it considers risky. This gives you a middle ground between full autopilot and fully supervised operation — most routine actions proceed automatically while unusual or potentially dangerous actions still surface for your review. As of v1.0.69-3, this mode requires experimental features to be enabled — use `/experimental on` or start the CLI with `--experimental` — then activate it with `/allow-all auto`. The previous `AUTO_APPROVAL` environment variable approach has been removed in favour of experimental mode.
+> **Auto allow-all mode (v1.0.69+)**: In addition to the standard allow-all mode (which approves everything), the CLI now supports an **auto allow-all** mode that uses an LLM judge to evaluate each tool request. When enabled, the judge automatically approves requests it evaluates as acceptable, and asks you for manual confirmation only for requests it considers risky. This gives you a middle ground between full autopilot and fully supervised operation — most routine actions proceed automatically while unusual or potentially dangerous actions still surface for your review. As of v1.0.69-3, this mode requires experimental features to be enabled — use `/experimental on` or start the CLI with `--experimental` — then activate it with `/allow-all auto`. The previous `AUTO_APPROVAL` environment variable approach has been removed in favour of experimental mode. In v1.0.78+, the auto safety-judge model is selected automatically and is no longer user-configurable.
 
 > **Read-only `gh` CLI commands (v1.0.46+)**: Read-only `gh` commands — such as `gh issue list`, `gh pr view`, `gh run status`, and other commands that don't write to GitHub — are **automatically approved** without a permission prompt. Only commands that write to GitHub (like creating issues, merging PRs) still require explicit approval. This reduces friction during exploratory sessions where you frequently check issue or PR status.
 
