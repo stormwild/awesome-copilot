@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-02
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -200,6 +200,27 @@ Or from an interactive session:
 
 > **Deprecation notice**: Installing plugins directly from a GitHub repository URL, raw URL, or local file path (e.g., `copilot plugin install github/awesome-copilot`) is deprecated and will be removed in a future release. Use marketplace-based installation instead.
 
+### Installing Skills Directly *(v1.0.72+)*
+
+You can install individual skills without a full plugin using the CLI:
+
+```bash
+# Install a skill from a local file or directory
+copilot plugins install --skill ./my-skill/
+
+# Install a skill from a URL
+copilot plugins install --skill https://example.com/skills/my-skill.md
+
+# Install a skill into the current repository (project scope)
+copilot plugins install --skill ./my-skill/ --scope project
+```
+
+Installed skills appear in `/skills` and are automatically used by Copilot when relevant to your task. Use `copilot plugins remove --skill <name>` to uninstall.
+
+### Open Plugin Spec v1 *(v1.0.74+)*
+
+GitHub Copilot CLI now supports **Open Plugin Spec v1** manifests. This means plugins published using the open standard plugin manifest format are installable directly. Plugin packages that include an `mcp.json` configuration file are also supported — the CLI will automatically configure their MCP servers on installation.
+
 ### From VS Code
 
 Browse to the plugin via `@agentPlugins` in the Extensions search view or via **Chat: Plugins** in the Command Palette, then click **Install**.
@@ -220,6 +241,24 @@ copilot plugin marketplace update
 
 # Remove a plugin
 copilot plugin uninstall my-plugin
+```
+
+### Enabling and Disabling Plugin Components *(v1.0.76+)*
+
+The `/plugins` interactive dashboard lets you enable or disable individual components from installed plugins without uninstalling them. Open the dashboard with `/plugins` and toggle:
+
+- **Plugins** — enable or disable the whole plugin
+- **Instructions** — turn off specific instruction files
+- **Agents** — enable or disable individual agent profiles
+- **LSP servers** — control language server integrations
+- **Hooks** — disable specific hooks without removing them
+
+You can also target components from the CLI with flags:
+
+```bash
+/plugins disable --plugin my-plugin   # disable an entire plugin
+/plugins enable --mcp my-server       # re-enable a specific MCP server
+/plugins disable --skill my-skill     # disable a skill
 ```
 
 ### Loading Plugins from a Local Directory

@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-02
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -449,6 +449,25 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
 
+**Per-session model override** *(v1.0.72+)*: Use `/model --session` (or `-s`) to change the model, reasoning effort, or context window for just the current session, leaving your global settings unchanged:
+
+```
+/model --session claude-opus-5   # use Opus 5 for this session only
+/model -s grok-4.5               # short form
+```
+
+When the session ends, your global model setting is restored automatically.
+
+**Plan-mode model** *(v1.0.74+)*: Use `/model plan` (or `/model --plan`) to select a dedicated model for plan mode. This lets you use a lighter model while planning and switch to a more capable one for execution:
+
+```
+/model plan claude-haiku-4.5   # use Haiku while planning
+/model plan off                 # clear the plan-mode model (falls back to session model)
+/model --plan                   # open the picker scoped to plan mode
+```
+
+The plan-mode model reverts to the session model when you exit plan mode.
+
 ### CLI Session Commands
 
 The `/settings` command (v1.0.61+) opens an interactive dialog to browse and edit all user settings in one place. Use it to discover available settings, toggle options, and update values without manually editing your config file:
@@ -506,6 +525,14 @@ The `/session delete` command removes sessions you no longer need:
 You can also press **x** on a highlighted session in the session picker (`--resume`) to delete it directly from the list.
 
 In the session picker, press **`s`** to cycle the sort order: relevance, last used, created, or name. The picker also shows the branch name and idle/in-use status for each session.
+
+**Sessions sidebar** *(v1.0.76+, experimental)*: An experimental split-view sidebar lets you manage multiple concurrent sessions without leaving the current session. To enable it, run `/experimental on`. Once enabled:
+
+- The sidebar appears on the right and shows all running sessions with their status
+- Use arrow keys to move the selection, **Enter** or a click to switch sessions, **n** to spawn a new session, and **x** twice to close a session from the keyboard
+- The active session card is accented by default (opt out with `sidebar.accentActiveSession`)
+- Hover-to-focus is off by default (opt in with `sidebar.hoverFocus`)
+- Sessions are persisted across restarts; disable this in `/settings` if you prefer a clean slate on launch
 
 The `/rewind` command opens a timeline picker that lets you roll back the conversation to any earlier point in history, reverting both the conversation and any file changes made after that point. You can also trigger it by pressing **double-Esc**:
 
@@ -809,6 +836,10 @@ echo 'source ~/.copilot-completion.bash' >> ~/.bashrc
 > **Tip**: Reload your shell (`source ~/.bashrc` or open a new terminal) after adding the completion script for changes to take effect.
 
 ## Common Questions
+
+**Q: How do I authenticate with GitHub Copilot CLI?**
+
+A: Run `copilot login` to authenticate. *(v1.0.77+)*: On local interactive terminals, the CLI defaults to a **browser-based (web) OAuth login flow** — your browser opens and you approve access with a click, without needing to copy a device code. On remote or headless terminals (SSH, CI), the classic device-code flow remains the default. You can force a specific mode with `--web-flow` or `--device-code`, or pick one interactively with `/login`.
 
 **Q: How do I disable Copilot for specific files?**
 
