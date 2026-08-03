@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-03
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -203,6 +203,44 @@ Or from an interactive session:
 ### From VS Code
 
 Browse to the plugin via `@agentPlugins` in the Extensions search view or via **Chat: Plugins** in the Command Palette, then click **Install**.
+
+## Installing Skills
+
+As of **v1.0.72**, you can install individual skills directly from the CLI without installing a full plugin:
+
+```bash
+# Install a skill from a local directory
+copilot plugins install --skill /path/to/skill-folder
+
+# Install a skill from a URL
+copilot plugins install --skill https://example.com/my-skill.zip
+
+# Install into the repository scope (project-level)
+copilot plugins install --skill /path/to/skill-folder --scope project
+```
+
+This is useful when you only need a single skill capability without the overhead of a full plugin.
+
+## Enabling and Disabling Plugin Components
+
+As of **v1.0.76**, you can enable or disable individual components of installed plugins without uninstalling them. Use the `/plugins` interactive panel in a Copilot CLI session, or the command line:
+
+```bash
+# Enable/disable a specific plugin
+copilot plugin enable my-plugin
+copilot plugin disable my-plugin
+
+# Enable/disable specific components via flags
+copilot plugin enable my-plugin --mcp my-mcp-server
+copilot plugin disable my-plugin --skill my-skill
+copilot plugin enable my-plugin --agent my-agent
+```
+
+This lets you fine-tune what's active without removing the plugin from your environment entirely.
+
+## Open Plugin Spec v1 Support
+
+As of **v1.0.74**, Copilot CLI supports **Open Plugin Spec v1** plugin manifests and `mcp.json` configuration files. This means plugins authored to the broader Open Plugin Spec standard can be installed and used directly, increasing interoperability with plugins from other compatible tools and marketplaces.
 
 ## Managing Plugins
 
