@@ -215,6 +215,26 @@ A shell command or script that runs automatically in response to lifecycle event
 
 ---
 
+### Space (Copilot Space)
+
+A named, curated knowledge base that packages project-specific context — repositories, files, documentation, and custom instructions — for loading into Copilot conversations on demand. Spaces are owned by users or organizations and can be shared with collaborators.
+
+**Key advantages**:
+- Grounds Copilot responses in your team's actual code, architecture, and standards
+- Auto-updates as underlying repositories and issues change
+- Can encode workflows and processes, not just reference material
+- Shareable across team members via collaborator permissions
+
+**Example**: A "Platform Architecture" Space containing architecture decision records, key design files, and an initiative tracking issue. Engineers load it when working on cross-service changes.
+
+**When to use**: When you have a body of project-specific context that you repeatedly need to bring into Copilot conversations, or when you want to create a shared knowledge base for your team.
+
+**Learn more**: [Using Copilot Spaces](../using-copilot-spaces/)
+
+**Related terms**: [Agent](#agent), [Instruction](#instruction), [MCP (Model Context Protocol)](#mcp-model-context-protocol)
+
+---
+
 ### Coding Agent
 
 The autonomous GitHub Copilot agent that works on issues in a cloud environment without continuous human guidance. You assign an issue to Copilot, it spins up a dev environment, implements a solution, runs tests, and opens a pull request for review.

@@ -847,3 +847,4 @@ Now that you understand Copilot configuration, explore how to create powerful cu
 - **[Defining Custom Instructions](../defining-custom-instructions/)** - Create persistent context for your projects
 - **[Creating Effective Skills](../creating-effective-skills/)** - Build reusable task folders with bundled assets
 - **[Building Custom Agents](../building-custom-agents/)** - Develop specialized assistants
+- **[Using Copilot Spaces](../using-copilot-spaces/)** - Create and share curated project knowledge bases
