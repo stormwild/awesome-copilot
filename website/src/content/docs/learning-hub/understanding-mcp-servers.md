@@ -369,6 +369,7 @@ A: No. Copilot CLI automatically detects Azure DevOps repositories and disables 
 ## Next Steps
 
 - **Build Agents**: [Building Custom Agents](../building-custom-agents/) — Create agents that leverage MCP tools
+- **Use Copilot Spaces**: [Using Copilot Spaces](../using-copilot-spaces/) — Load curated project context that uses MCP to access GitHub Spaces
 - **Explore Examples**: Browse the [Agents Directory](../../agents/) for agents built around MCP server integrations
 - **Protocol Deep Dive**: [MCP Specification](https://spec.modelcontextprotocol.io/) — Learn the protocol details for building your own servers
 
