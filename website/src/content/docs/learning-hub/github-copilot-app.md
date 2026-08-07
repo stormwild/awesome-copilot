@@ -3,7 +3,7 @@ title: 'Getting Started with the GitHub Copilot app'
 description: 'Learn about the GitHub Copilot app, a desktop experience built for agent-native development. Understand its key features and who it''s for.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-06-17
+lastUpdated: 2026-08-07
 estimatedReadingTime: '8 minutes'
 tags:
   - copilot-app
@@ -55,6 +55,16 @@ Instead of checking GitHub, your CLI, and VS Code for updates, everything is in 
 The Copilot app includes built-in automations that can run scheduled tasks for you using the same agentic technology. You can use templates out of the box or create your own.
 
 Automations run in the context of a repository, so they can access issues, pull requests, and code. You can also choose whether they run as a plan, an interactive session, or on autopilot.
+
+### Multiple Concurrent Sessions
+
+The Copilot app now includes a dedicated **Sessions tab** and sidebar for managing multiple concurrent sessions without losing track. You can:
+
+- View and switch between all running sessions from the Sessions tab
+- See the current status of each session at a glance
+- Keep multiple agents running in parallel while you focus on other work
+
+From the Copilot CLI, you can also start a new session in a fresh worktree using `/worktree new`, which creates an isolated branch and immediately begins a new conversation.
 
 ### Isolated Worktrees for Parallel Work
 
