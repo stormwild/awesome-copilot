@@ -3,7 +3,7 @@ title: 'Using the Copilot Coding Agent'
 description: 'Learn how to use GitHub Copilot coding agent to autonomously work on issues, generate pull requests, and automate development tasks.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-05-13
+lastUpdated: 2026-08-07
 estimatedReadingTime: '12 minutes'
 tags:
   - coding-agent
@@ -333,6 +333,31 @@ This repository provides a curated collection of agents, skills, and hooks desig
 4. The hooks will run automatically during coding agent sessions
 
 > **Example workflow**: Combine a `test-specialist` agent with a `database-migrations` skill and a linting hook. Assign an issue to the coding agent using the test-specialist agent — it will automatically pick up the migrations skill when relevant, and the hook ensures all code is formatted before completion.
+
+## Controlling Approval Behavior
+
+When running the Copilot CLI in an interactive or automated session, you can control how much autonomy the agent has using the `/permissions` command:
+
+```
+/permissions          # show current approval mode
+/permissions plan     # require approval before making changes
+/permissions auto     # approve all actions automatically (autopilot)
+```
+
+Approval modes let you balance oversight with speed:
+
+| Mode | Behavior |
+|------|----------|
+| **Default (interactive)** | Agent asks for approval before running tool calls |
+| **Autopilot** | Agent runs without asking for approvals |
+
+You can also combine planning with autopilot for a two-phase approach: let the agent plan first, review the plan, then implement without interruptions:
+
+```bash
+copilot --plan --mode autopilot
+```
+
+This is useful when you want to validate the agent's intended approach before it makes changes, but then trust it to implement autonomously without step-by-step approval.
 
 ## Remote Control
 
