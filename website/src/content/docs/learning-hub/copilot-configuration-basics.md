@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-08
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -428,7 +428,9 @@ CLI settings use **camelCase** naming. Key settings added in recent releases:
 | `continueOnAutoMode` | Automatically switch to the auto model on rate limit instead of pausing |
 | `proxy` | HTTP(S) proxy URL for all outbound CLI requests (e.g., `http://proxy.example.com:8080`) (v1.0.64+) |
 | `sessionLimits` | Restrict credit or turn usage for a session; limits apply across the current conversation and reset on `/clear` (v1.0.66+) |
-| `stayInAutopilot` | Keep the CLI in autopilot mode after an autopilot task completes, instead of returning to interactive mode (v1.0.69+) |
+| `stayInAutopilot` | Keep the CLI in autopilot mode after an autopilot task completes, instead of returning to interactive mode (v1.0.69+). **Default is now `true` as of v1.0.76** — set to `false` to return to interactive mode after each task. |
+| `showToolDurations` | Show how long each tool call took in the timeline headers (v1.0.78+). On by default; disable with `/settings showToolDurations false`. |
+| `allowDevToolCaches` | Grant sandboxed builds access to toolchain caches, registries, and installs (v1.0.78+). On by default; set `false` to opt out. |
 
 > **Note**: Older snake_case names (e.g., `include_gitignored`, `auto_updates_channel`) are still accepted for backward compatibility, but camelCase is now the preferred format.
 
@@ -448,6 +450,18 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 **Auto mode and server-side model routing** (v1.0.43+): When you select **Auto** as your model, the CLI uses server-side model routing for real-time model selection. Instead of locking in a single model at session start, Auto mode evaluates each request and routes it to the most appropriate model dynamically. This means straightforward questions can be handled by a faster model while complex reasoning tasks are automatically escalated — without you needing to switch models manually.
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
+
+**Plan mode model** (v1.0.74+): Use `/model plan` (or `/model --plan`) to set a separate model used while in plan mode. Pass a model id to set it, `off` to clear it, or no argument to open the picker. The plan model reverts to your session model when you exit plan mode:
+
+```
+/model plan                  # open the model picker for plan mode
+/model plan claude-opus-5    # set a specific model for plan mode
+/model plan off              # clear the plan mode model override
+```
+
+This is useful for setting a more powerful or deliberate model for planning tasks while using a faster model for implementation.
+
+**New models** (v1.0.74–v1.0.76): Recent releases added support for several new models: **Claude Opus 5** (v1.0.75), **Grok-4.5** (v1.0.76), and **Gemini 3.6 Flash** (v1.0.74). These join the existing model options available in the picker and via `--model`.
 
 ### CLI Session Commands
 
@@ -507,11 +521,13 @@ You can also press **x** on a highlighted session in the session picker (`--resu
 
 In the session picker, press **`s`** to cycle the sort order: relevance, last used, created, or name. The picker also shows the branch name and idle/in-use status for each session.
 
-The `/rewind` command opens a timeline picker that lets you roll back the conversation to any earlier point in history, reverting both the conversation and any file changes made after that point. You can also trigger it by pressing **double-Esc**:
+The `/rewind` command opens a timeline picker that lets you roll back the conversation to any earlier point in history. You can also trigger it by pressing **double-Esc**:
 
 ```
 /rewind
 ```
+
+As of v1.0.78, `/rewind` no longer requires git — it restores only the files Copilot changed (skipping any file whose contents no longer match what Copilot last wrote), and offers two choices: conversation-only, or conversation + files. This makes it safe to use even in repositories without git tracking, or when you want to undo the conversation without reverting file changes.
 
 Use `/rewind` when you want to branch off from a different point in the conversation, rather than just undoing the most recent turn.
 
@@ -556,6 +572,14 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
 
 After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
+
+The `/new-worktree` command *(v1.0.78+, experimental)* creates a new worktree **and** starts a new conversation inside it in one step, without affecting the current session:
+
+```
+/new-worktree my-feature-branch
+```
+
+Unlike `/worktree` (which moves the current session into a new worktree), `/new-worktree` leaves the current session running and opens the new worktree as a fresh conversation. This is ideal for spinning up a parallel task while staying in your current context.
 
 The `/every` command (also available as `/loop` since v1.0.64) schedules a recurring prompt to run automatically at a specified interval. The companion `/after` command runs a prompt once after a specified delay. Both are useful for self-paced automation — polling for results, periodically summarizing progress, or triggering other slash commands on a timer:
 
@@ -715,6 +739,14 @@ Use `/autopilot` when you want to flip between supervised and unsupervised opera
 
 > **Auto allow-all mode (v1.0.69+)**: In addition to the standard allow-all mode (which approves everything), the CLI now supports an **auto allow-all** mode that uses an LLM judge to evaluate each tool request. When enabled, the judge automatically approves requests it evaluates as acceptable, and asks you for manual confirmation only for requests it considers risky. This gives you a middle ground between full autopilot and fully supervised operation — most routine actions proceed automatically while unusual or potentially dangerous actions still surface for your review. As of v1.0.69-3, this mode requires experimental features to be enabled — use `/experimental on` or start the CLI with `--experimental` — then activate it with `/allow-all auto`. The previous `AUTO_APPROVAL` environment variable approach has been removed in favour of experimental mode.
 
+The `/permissions` command *(v1.0.78+)* opens an interactive dialog to switch between approval modes without using `/allow-all`:
+
+```
+/permissions
+```
+
+Use `/permissions` when you want a clear overview of the current approval mode and want to switch between interactive (ask before each tool), autopilot (run without asking), or auto-judge (LLM-evaluated approval). It provides the same capability as `/allow-all` but in a more discoverable, menu-driven interface.
+
 > **Read-only `gh` CLI commands (v1.0.46+)**: Read-only `gh` commands — such as `gh issue list`, `gh pr view`, `gh run status`, and other commands that don't write to GitHub — are **automatically approved** without a permission prompt. Only commands that write to GitHub (like creating issues, merging PRs) still require explicit approval. This reduces friction during exploratory sessions where you frequently check issue or PR status.
 
 The `--effort` flag (shorthand for `--reasoning-effort`) controls how much computational reasoning the model applies to a request:
@@ -784,9 +816,38 @@ copilot --config-dir ~/.my-copilot-config
 
 Set `COPILOT_HOME` in your shell profile to use a custom config directory across all sessions. This is especially useful when running multiple Copilot configurations for different projects or teams.
 
+The `/limits predict` command *(v1.0.76+)* suggests a session AI-credit limit based on similar past sessions:
+
+```
+/limits predict
+```
+
+Use this as a starting point when setting `sessionLimits` to constrain how many credits a session can consume. It analyzes your session history to recommend a limit appropriate for the type of task you're working on.
+
+### Sessions Sidebar
+
+*(v1.0.76+, experimental)* The **Sessions sidebar** lets you manage multiple concurrent Copilot CLI sessions from a single window — switch between them, spawn new sessions, and monitor their status at a glance:
+
+```
+/experimental on    # enable experimental features
+```
+
+Once enabled, the sidebar appears as a collapsible panel. Each session card shows its name, branch, and status (idle, running, or waiting for input). You can switch to any session, spawn a new one from the sidebar, or close sessions you no longer need. The active session card is highlighted in an accent color (configurable with `sidebar.accentActiveSession`).
+
+**Note**: Switching sessions does not restart MCP servers or rebuild hook state, so a turn running in another session is not interrupted when you switch away.
+
+### Authentication and Login
+
+Copilot CLI supports multiple login flows for different environments:
+
+- **Browser flow** *(v1.0.77+, default for local interactive terminals)*: Opens your default browser to complete authentication. This is now the default when running on a local desktop with a TTY. Use `copilot login --web-flow` to force this mode.
+- **Device code flow** *(default for remote/headless terminals)*: Shows a URL and a code to enter on another device. Use `copilot login --device-code` to force this mode, or pick either option in the interactive `/login` command.
+
+Switch between login modes within a session using `/login`, which supports account switching and re-authentication without restarting the session.
+
 ### Shell Completion
 
-The `copilot completion` subcommand generates a static shell completion script for subcommands, flags, and known option values. Once installed, pressing Tab auto-completes Copilot CLI commands in your terminal.
+The `copilot completion` subcommand generates a static shell completion script for subcommands, flags, and known option values. Once installed, pressing Tab auto-completes Copilot CLI commands in your terminal. As of v1.0.78, `--model` completion suggests `auto` and supported model names.
 
 ```bash
 # Bash — add to ~/.bashrc
