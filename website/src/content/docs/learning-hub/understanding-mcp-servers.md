@@ -3,7 +3,7 @@ title: 'Understanding MCP Servers'
 description: 'Learn how Model Context Protocol servers extend GitHub Copilot with access to external tools, databases, and APIs.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-08
 estimatedReadingTime: '8 minutes'
 tags:
   - mcp
@@ -70,6 +70,8 @@ MCP servers are configured per-workspace. GitHub Copilot CLI discovers server de
 | `.vscode/mcp.json` | VS Code workspace | VS Code–compatible workspace config |
 | `devcontainer.json` | Dev container | Available when running inside a container |
 
+> *(v1.0.74+)* GitHub Copilot CLI also supports **Open Plugin Spec v1 plugin manifests** and their associated `mcp.json` configuration files. If a plugin bundles an `mcp.json` following the Open Plugin Spec format, Copilot will automatically load its MCP server definitions when the plugin is installed or active.
+
 > **Security**: Workspace MCP servers are loaded **only after folder trust is confirmed**. If you haven't explicitly trusted a folder, servers defined in its config files won't start — protecting you from malicious MCP server configurations in untrusted repositories.
 
 Example `.mcp.json` or `.vscode/mcp.json`:
@@ -109,6 +111,8 @@ You can also install a specific server by name directly:
 ```
 
 This guided flow is the recommended way to add new MCP servers, especially for servers that require multiple configuration values.
+
+> *(v1.0.74+)* The `/mcp add` and `/mcp edit` wizard now correctly preserves `=` characters in environment variable values (such as base64 padding in API tokens and connection strings). If you previously had to work around this by editing config files manually, you can now use the wizard for secrets with `=` in their values.
 
 ### Configuration Fields
 
@@ -316,6 +320,8 @@ For example, a PostgreSQL server that can't connect because `DATABASE_URL` is no
 You can also open the `/mcp` manager while the agent is working to toggle servers on or off mid-turn. Add, edit, delete, and re-auth actions wait until the turn finishes, but enabling or disabling a server takes effect immediately.
 
 **Toggling servers on and off** (v1.0.66+): From the `/mcp` list view, you can **enable or disable individual MCP servers** without editing your config file. Select a server in the list and toggle it — disabled servers won't start in future sessions and their tools won't be available to agents. This is useful for temporarily disabling a server that's causing slowdowns or errors without removing it from your configuration entirely.
+
+**Faster MCP tool loading** *(v1.0.76+)*: MCP tools now load faster from definition-scoped snapshots. Process-wide and per-server cache opt-outs are available if you need to disable caching for a specific server. This improvement benefits sessions with many MCP servers configured, as tools are available sooner after session start.
 
 **Common causes and fixes**:
 
