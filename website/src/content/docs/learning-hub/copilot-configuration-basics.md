@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-11
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -470,6 +470,15 @@ The settings dialog supports search — type to filter settings by name. Changes
 
 These flags mirror the **Repo** and **Repo (local)** scope tabs available in the `/settings` dashboard (v1.0.71+), making it easier to manage per-repository vs. user-global configuration without ambiguity. In v1.0.71+, the `/settings` dashboard also shows **Repo** and **Repo (local)** tabs alongside the existing user-level view, giving you a unified place to see which settings are applied at each layer.
 
+*(v1.0.79+)* **`/model` is now session-scoped by default.** Using `/model` to pick a model changes the model only for the current session. To set the default model for all future sessions, use `/config model` instead:
+
+```
+/model              # change the model for this session only
+/config model       # set the default model for all future sessions
+```
+
+This separation makes it easy to try a different model for a specific task without permanently changing your default.
+
 GitHub Copilot CLI has two commands for managing session state, with distinct behaviours:
 
 | Command | Behaviour |
@@ -554,6 +563,25 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 ```
 
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
+
+*(v1.0.79+)* Use **`/worktree new`** to start a brand-new session in a freshly created worktree, without moving any uncommitted changes from the current session:
+
+```
+/worktree new
+/worktree new "my-experiment"   # with an optional name
+```
+
+This is useful when you want to start a parallel task on a clean slate while keeping your current session's changes in place.
+
+The **`worktreeBaseRef`** setting (v1.0.79+) controls whether `/worktree`, `/worktree new`, and `--worktree` start from `HEAD` or from the remote default branch. All three default to `HEAD`:
+
+```json
+{
+  "worktreeBaseRef": "HEAD"      // default — branch from the current HEAD
+}
+```
+
+Change this to the name of a remote branch (e.g., `"origin/main"`) to always start worktrees from a known clean state regardless of your current position.
 
 After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
 
@@ -742,6 +770,14 @@ copilot --autopilot     # alias for --mode autopilot (allow-all)
 copilot --plan          # start in plan mode (propose without executing)
 ```
 
+*(v1.0.79+)* Combine `--plan` with `--mode autopilot` to **plan first, then implement automatically** — the agent produces a plan, and once you approve it, switches to autopilot to carry it out without further confirmation prompts:
+
+```bash
+copilot --plan --mode autopilot "Add pagination to the users API endpoint"
+```
+
+This is useful when you want to review the approach before letting the agent run freely, without having to manually switch modes mid-session.
+
 This is useful in scripts or CI pipelines where you want the CLI to immediately begin working in a specific mode without an interactive prompt.
 
 The `--max-autopilot-continues` flag controls how many times Copilot can automatically continue in autopilot mode before pausing for confirmation. The default is 5:
@@ -760,6 +796,14 @@ copilot --no-sandbox -p "Set up development environment with system tools"
 ```
 
 These flags apply only to the current invocation — your persisted sandbox preference remains unchanged.
+
+*(v1.0.79+)* The **`/sandbox policy`** subcommand shows the effective sandbox configuration for the current session — including all allowed and blocked paths, network access status, and any policy overrides applied by enterprise settings:
+
+```
+/sandbox policy
+```
+
+Use this to audit what the sandbox is actually allowing or blocking, which is especially helpful when diagnosing tool failures in sandboxed environments.
 
 The `--attachment` flag (available in prompt mode, `-p`) lets you attach files — images or native documents — to the initial prompt in non-interactive mode:
 
