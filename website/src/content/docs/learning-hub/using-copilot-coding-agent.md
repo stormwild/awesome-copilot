@@ -3,7 +3,7 @@ title: 'Using the Copilot Coding Agent'
 description: 'Learn how to use GitHub Copilot coding agent to autonomously work on issues, generate pull requests, and automate development tasks.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-05-13
+lastUpdated: 2026-08-12
 estimatedReadingTime: '12 minutes'
 tags:
   - coding-agent
@@ -377,6 +377,16 @@ Since v1.0.47, `--resume` also surfaces **cloud agent sessions that haven't yet 
 
 > **Note**: Remote control replaces the earlier "steering" feature. If you see references to steering in older documentation, remote control is the updated equivalent.
 
+## Plan-Then-Implement Mode
+
+*(v1.0.79+)* You can combine `--plan` with `--mode autopilot` to have the CLI plan the work first, then implement it automatically without waiting for your approval between steps:
+
+```bash
+copilot --plan --mode autopilot "implement rate limiting on the login endpoint"
+```
+
+This is useful when you trust the agent to work through a well-defined task autonomously but still want a planning pass before execution begins — giving the agent a chance to outline its approach before committing to any file changes.
+
 ## Hooks and the Coding Agent
 
 Hooks are especially valuable with the coding agent because they provide deterministic guardrails for autonomous work:
@@ -438,7 +448,7 @@ A: The agent has built-in timeouts. If it can't make progress, it will open a PR
 
 **Q: Can I assign multiple issues at once?**
 
-A: Yes. The coding agent can work on multiple issues in parallel, each in its own branch. Use Mission Control on GitHub.com to track all active agent sessions.
+A: Yes. The coding agent can work on multiple issues in parallel, each in its own branch. Use Mission Control on GitHub.com to track all active agent sessions. From the CLI, the **Sessions tab** (v1.0.79+) lets you manage multiple concurrent sessions from within a single terminal window.
 
 **Q: Does the coding agent use my custom agents and skills?**
 
