@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-14
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -449,6 +449,15 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
 
+**Model picker grouping** (v1.0.79+): The model picker now groups models into **Recent**, **Recommended**, **New**, and other sections so you can quickly find the right model. Press **Shift+Tab** to switch between grouping views within the picker.
+
+**Session-scoped `/model`** (v1.0.79+): The `/model` command is now session-scoped by default — changing the model only affects the current session. Use `/config model` to set a persistent default that applies to future sessions:
+
+```
+/model gpt-4o          # use gpt-4o for this session only
+/config model gpt-4o   # set gpt-4o as the default for future sessions
+```
+
 ### CLI Session Commands
 
 The `/settings` command (v1.0.61+) opens an interactive dialog to browse and edit all user settings in one place. Use it to discover available settings, toggle options, and update values without manually editing your config file:
@@ -556,6 +565,15 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
 
 After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
+
+**`/worktree new`** (v1.0.79+): Use `/worktree new` to start a new session in a brand-new worktree without moving any uncommitted changes from your current session. This is useful when you want to spin up a parallel session on a clean branch while keeping your current working session intact:
+
+```
+/worktree new                        # create a new worktree and start a fresh session
+/worktree new fix-the-login-bug      # create a named worktree for a specific task
+```
+
+**`worktreeBaseRef` setting** (v1.0.79+): Controls whether `/worktree`, `/worktree new`, and `--worktree` start from `HEAD` or the remote default branch. All three now default to `HEAD`. Set `worktreeBaseRef` to `remote` in your settings if you prefer new worktrees to start from the remote default branch instead.
 
 The `/every` command (also available as `/loop` since v1.0.64) schedules a recurring prompt to run automatically at a specified interval. The companion `/after` command runs a prompt once after a specified delay. Both are useful for self-paced automation — polling for results, periodically summarizing progress, or triggering other slash commands on a timer:
 
@@ -715,6 +733,8 @@ Use `/autopilot` when you want to flip between supervised and unsupervised opera
 
 > **Auto allow-all mode (v1.0.69+)**: In addition to the standard allow-all mode (which approves everything), the CLI now supports an **auto allow-all** mode that uses an LLM judge to evaluate each tool request. When enabled, the judge automatically approves requests it evaluates as acceptable, and asks you for manual confirmation only for requests it considers risky. This gives you a middle ground between full autopilot and fully supervised operation — most routine actions proceed automatically while unusual or potentially dangerous actions still surface for your review. As of v1.0.69-3, this mode requires experimental features to be enabled — use `/experimental on` or start the CLI with `--experimental` — then activate it with `/allow-all auto`. The previous `AUTO_APPROVAL` environment variable approach has been removed in favour of experimental mode.
 
+> **Enterprise `allow-auto-only` policy (v1.0.79+)**: Enterprise admins can enforce an `allow-auto-only` policy that permits `/allow-all auto` (the LLM-judged middle ground) while keeping full `/allow-all on` (approve everything) blocked. This lets organizations offer the productivity of auto-approval in a controlled way without opening the door to unconstrained tool execution.
+
 > **Read-only `gh` CLI commands (v1.0.46+)**: Read-only `gh` commands — such as `gh issue list`, `gh pr view`, `gh run status`, and other commands that don't write to GitHub — are **automatically approved** without a permission prompt. Only commands that write to GitHub (like creating issues, merging PRs) still require explicit approval. This reduces friction during exploratory sessions where you frequently check issue or PR status.
 
 The `--effort` flag (shorthand for `--reasoning-effort`) controls how much computational reasoning the model applies to a request:
@@ -760,6 +780,8 @@ copilot --no-sandbox -p "Set up development environment with system tools"
 ```
 
 These flags apply only to the current invocation — your persisted sandbox preference remains unchanged.
+
+> **Breaking change (v1.0.79)**: The sandbox setting `allowDevToolCaches` has been **renamed to `allowDevToolAccess`** — it now also grants dev-tool config and registry access, not just caches. The old key is silently ignored, so an existing `false` opt-out reverts to the default (on). **Rename it in your `settings.json` and any managed/MDM policy files.**
 
 The `--attachment` flag (available in prompt mode, `-p`) lets you attach files — images or native documents — to the initial prompt in non-interactive mode:
 
