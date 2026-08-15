@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-15
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -182,6 +182,24 @@ Pinning to a SHA guarantees that everyone on the team installs plugins from exac
 - **Change control** — review and approve plugin updates before rolling them out team-wide
 - **Stability** — prevent breaking changes in upstream marketplaces from impacting your team without notice
 
+### Auto-updating Marketplace Plugins at Session Start
+
+*(v1.0.79+)* Set `"autoUpdate": true` on an `extraKnownMarketplaces` entry to automatically update its plugins each time a Copilot CLI session starts:
+
+```json
+{
+  "extraKnownMarketplaces": [
+    {
+      "name": "my-org-plugins",
+      "source": "my-org/internal-plugins",
+      "autoUpdate": true
+    }
+  ]
+}
+```
+
+With `autoUpdate` enabled, the CLI fetches the latest plugin versions from that marketplace at session startup, keeping the team on the latest versions without requiring a manual `copilot plugin update`. This is useful for internal marketplaces where you want to roll out plugin improvements immediately. Note that `autoUpdate` and `sha` pinning are mutually exclusive — you cannot both pin to a specific commit and auto-update.
+
 ## Installing Plugins
 
 ### From Copilot CLI
@@ -282,6 +300,33 @@ See [Using the Copilot Coding Agent](../using-copilot-coding-agent/) for details
 - **Review what you install** — plugins run code on your machine, so inspect unfamiliar plugins before installing
 - **Use plugins for team standards** — publish an internal plugin to ensure every team member has the same agents, skills, and hooks
 - **Remove unused plugins** — declutter with `copilot plugin uninstall` to keep your environment clean
+
+## Migration Notes
+
+### Agent Plugins spec: `com.github.copilot/` directory (Breaking change in v1.0.80)
+
+If you are **authoring** an Agent Plugins spec plugin (using the `plugin.json`-based format), note that as of v1.0.80, Copilot CLI reads plugin components **only** from under a `com.github.copilot/` subdirectory — no longer from the plugin root.
+
+Before (v1.0.79 and earlier):
+```
+my-plugin/
+├── agents/
+├── hooks/hooks.json
+├── lsp.json
+└── extensions/
+```
+
+After (v1.0.80+):
+```
+my-plugin/
+└── com.github.copilot/
+    ├── agents/
+    ├── hooks/hooks.json
+    ├── lsp.json
+    └── extensions/
+```
+
+Plugins that still place `commands/`, `agents/`, `rules/`, `hooks/hooks.json`, `lsp.json`, or `extensions/` at the plugin root will have those components silently ignored — with a warning showing the file and where to move it. Update your plugin structure before upgrading to v1.0.80+. Plugins installed from the `awesome-copilot` marketplace use the standard layout defined in `plugin.json` and are not affected by this change.
 
 ## Common Questions
 
