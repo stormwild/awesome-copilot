@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-15
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -557,6 +557,24 @@ This creates a branch named from your task description and begins working on it 
 
 After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
 
+**`/worktree new` — start a fresh session in a new worktree (v1.0.79+)**: The `/worktree new` command starts an entirely new, isolated session inside a new worktree, rather than moving the current session:
+
+```
+/worktree new fix the payment service
+```
+
+Unlike `/worktree` (which moves your current session's uncommitted changes to the new branch), `/worktree new` opens the new worktree in a clean state with a clean context window. This is the right choice when you want a truly parallel, independent track rather than continuing the same session on a new branch.
+
+**`worktreeBaseRef` setting**: By default, `/worktree`, `/worktree new`, and `--worktree` all branch from `HEAD`. You can change this globally with the `worktreeBaseRef` setting in your user config:
+
+```json
+{
+  "worktreeBaseRef": "origin/main"
+}
+```
+
+Set it to `origin/main` (or any valid ref) to always start worktrees from the remote default branch rather than your current commit. This was the old default for `--worktree`; all three commands now default to `HEAD`.
+
 The `/every` command (also available as `/loop` since v1.0.64) schedules a recurring prompt to run automatically at a specified interval. The companion `/after` command runs a prompt once after a specified delay. Both are useful for self-paced automation — polling for results, periodically summarizing progress, or triggering other slash commands on a timer:
 
 ```
@@ -709,6 +727,14 @@ The `/autopilot` command (v1.0.45+) is a quick in-session toggle that switches b
 /autopilot        # toggle between interactive and autopilot modes
 ```
 
+In v1.0.79+, you can also pass an explicit **objective** to `/autopilot` without needing experimental features enabled:
+
+```
+/autopilot Refactor the auth module to use the new token service
+```
+
+This sets the session's current objective and switches to autopilot mode in one step. Previously, setting an explicit objective with `/autopilot` required experimental features to be enabled.
+
 Use `/autopilot` when you want to flip between supervised and unsupervised operation mid-session without typing out the full `/allow-all on` or `/allow-all off` commands.
 
 > **Enhanced autopilot (v1.0.64+)**: When autopilot mode is active — including when launched with `--autopilot` at startup or during automatic continuation turns — the agent automatically handles elicitation dialogs, `ask_user` prompts, sampling requests, and permission prompts without surfacing them as interactive dialogs. This means long-running automated sessions can proceed end-to-end without manual confirmation steps.
@@ -743,6 +769,14 @@ copilot --plan          # start in plan mode (propose without executing)
 ```
 
 This is useful in scripts or CI pipelines where you want the CLI to immediately begin working in a specific mode without an interactive prompt.
+
+**Combining `--plan` with `--mode autopilot` (v1.0.79+)**: You can now combine these two flags to first plan and then immediately execute without waiting for approval:
+
+```bash
+copilot --plan --mode autopilot "Refactor the authentication module"
+```
+
+This runs the plan phase first, then automatically transitions to autopilot execution. Previously, these two modes were mutually exclusive.
 
 The `--max-autopilot-continues` flag controls how many times Copilot can automatically continue in autopilot mode before pausing for confirmation. The default is 5:
 

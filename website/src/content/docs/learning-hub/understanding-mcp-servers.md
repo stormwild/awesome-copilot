@@ -3,7 +3,7 @@ title: 'Understanding MCP Servers'
 description: 'Learn how Model Context Protocol servers extend GitHub Copilot with access to external tools, databases, and APIs.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-15
 estimatedReadingTime: '8 minutes'
 tags:
   - mcp
@@ -121,6 +121,18 @@ This guided flow is the recommended way to add new MCP servers, especially for s
 **type** (remote servers): The transport type for remote MCP servers (`http` or `sse`). This field can now be omitted — the CLI defaults to `http` when no type is specified, simplifying remote server configuration.
 
 **deferTools** *(optional, v1.0.63+)*: When set to `false`, the server's tools are always available even when tool search is enabled. By default, tool search can hide rarely-used MCP tools to reduce context noise; setting `deferTools: false` on a server prevents its tools from being deferred, keeping them permanently in the tool list.
+
+**Tool discovery timeout**: MCP server timeout settings now apply to tool discovery as well as tool execution, with a default of 30 seconds. This means slow-starting MCP servers (such as those that spin up a subprocess or network service) have enough time to load and report their available tools before Copilot gives up on them. If you have a particularly slow server, you can increase the timeout in settings.
+
+### Re-enabling a Disabled MCP Server for a Single Run
+
+*(v1.0.80+)* If you have disabled an MCP server in your settings (for example, to keep it out of most sessions), you can re-enable it for just the current run with the `--enable-mcp-server` flag:
+
+```bash
+copilot --enable-mcp-server postgres
+```
+
+This is useful for MCP servers you only occasionally need. Disable them globally to keep your everyday sessions lean, then opt in for specific tasks without permanently changing your settings.
 
 ### Allowing MCP Server Instructions
 
