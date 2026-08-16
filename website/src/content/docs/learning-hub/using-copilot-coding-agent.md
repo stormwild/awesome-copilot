@@ -3,7 +3,7 @@ title: 'Using the Copilot Coding Agent'
 description: 'Learn how to use GitHub Copilot coding agent to autonomously work on issues, generate pull requests, and automate development tasks.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-05-13
+lastUpdated: 2026-08-16
 estimatedReadingTime: '12 minutes'
 tags:
   - coding-agent
@@ -376,6 +376,80 @@ Since v1.0.47, `--resume` also surfaces **cloud agent sessions that haven't yet 
 | No PR required | You can steer tasks that haven't yet opened a pull request |
 
 > **Note**: Remote control replaces the earlier "steering" feature. If you see references to steering in older documentation, remote control is the updated equivalent.
+
+## Agent Host Protocol: Sharing Sessions Across Terminals
+
+**Agent Host Protocol (AHP)** lets multiple CLI clients connect to the same session running on a host — useful when you want to monitor a session from another terminal, pair program with an agent, or run sessions in Codespaces while controlling them locally.
+
+### Starting an AHP Host
+
+```bash
+copilot --ahp
+```
+
+This attaches the CLI to an AHP host. If no host is running locally, one is started automatically. Sessions created in this mode live on the host instead of in the CLI process — meaning multiple terminals can attach and watch turns stream live.
+
+### Connecting to Codespaces and Cloud Environments
+
+Forward a Codespace's Copilot daemon to your local machine:
+
+```
+/ahp codespace <codespace-name>
+```
+
+Connect the current session's cloud compute to your Sessions tab:
+
+```
+/ahp cloud <environment-id>
+```
+
+### Managing AHP Hosts
+
+| Command | What It Does |
+|---------|-------------|
+| `/ahp start [port]` | Start a local AHP daemon serving the current directory |
+| `/ahp stop <host>` | Stop a running daemon |
+| `/ahp restart <host>` | Restart a daemon |
+| `/ahp hosts` | List all connected hosts and their status |
+| `/ahp status` | Show identity and health of the current host |
+| `/ahp sessions` | List sessions on the current host |
+| `/ahp attach` | Attach to a session on the host |
+
+### Sessions Tab
+
+The **Sessions tab** in the CLI shows all your concurrent sessions — from the local process and any connected AHP hosts — with their current status (running, waiting on input, or idle). Use it to:
+
+- Switch between sessions with `h`
+- Spawn new sessions on a specific host with `n`
+- See whether anyone else is attached to a shared session
+
+> **Note**: `--ahp` and `/ahp` commands are gated on the `AHP_CLIENT` feature flag. If you don't see these options, your account may not yet have access.
+
+## Worktrees: Isolated Branches for Parallel Work
+
+Use `/worktree new` to start a fresh conversation in its own isolated git worktree — ideal for working on a separate feature without affecting your current branch:
+
+```
+/worktree new
+```
+
+You can also control what base ref new worktrees start from with the `worktreeBaseRef` setting. By default, all three worktree commands (`/worktree`, `/worktree new`, and `--worktree`) start from HEAD.
+
+## Autopilot Mode
+
+Autopilot lets the agent work through tasks end-to-end without requiring your approval at each step. Set an explicit objective from the start:
+
+```
+/autopilot Fix all the failing tests in the payment module
+```
+
+Or combine `--plan` with `--mode autopilot` to plan first and then implement without waiting for approval:
+
+```bash
+copilot --plan --mode autopilot
+```
+
+The agent will generate a plan, then proceed with implementation automatically. By default, autopilot stays selected after a task completes. Set `stayInAutopilot` to `false` in settings to return to interactive mode after each task.
 
 ## Hooks and the Coding Agent
 
