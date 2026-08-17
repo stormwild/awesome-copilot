@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-17
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -449,6 +449,8 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
 
+**Model picker groups** (v1.0.79+): The model picker now groups models into **Recent**, **Recommended**, **New**, and other sections, making it easier to find recently used models or discover newly added ones. Use **Shift+Tab** to cycle through grouping views.
+
 ### CLI Session Commands
 
 The `/settings` command (v1.0.61+) opens an interactive dialog to browse and edit all user settings in one place. Use it to discover available settings, toggle options, and update values without manually editing your config file:
@@ -469,6 +471,8 @@ The settings dialog supports search — type to filter settings by name. Changes
 ```
 
 These flags mirror the **Repo** and **Repo (local)** scope tabs available in the `/settings` dashboard (v1.0.71+), making it easier to manage per-repository vs. user-global configuration without ambiguity. In v1.0.71+, the `/settings` dashboard also shows **Repo** and **Repo (local)** tabs alongside the existing user-level view, giving you a unified place to see which settings are applied at each layer.
+
+> **Model scope change (v1.0.79+)**: `/model` is now **session-scoped by default** — it sets the model for the current session only and does not persist to future sessions. To set a persistent default model for all future sessions, use `/config model` instead. This separates the concern of "what model am I using right now" (session) from "what model should I default to" (config).
 
 GitHub Copilot CLI has two commands for managing session state, with distinct behaviours:
 
@@ -556,6 +560,14 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
 
 After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
+
+**`/worktree new`** (v1.0.79+): Use `/worktree new` to start a fresh session in a brand-new worktree without carrying over your current conversation or uncommitted changes. This is useful when you want a clean slate on a parallel branch:
+
+```
+/worktree new my-feature-branch
+```
+
+**`worktreeBaseRef` setting** (v1.0.79+): The `worktreeBaseRef` setting controls whether `/worktree`, `/worktree new`, and `--worktree` start from your current `HEAD` or from the remote default branch. All three now default to `HEAD`. Set `worktreeBaseRef` to `"remote"` if you prefer branches to start from the default remote branch.
 
 The `/every` command (also available as `/loop` since v1.0.64) schedules a recurring prompt to run automatically at a specified interval. The companion `/after` command runs a prompt once after a specified delay. Both are useful for self-paced automation — polling for results, periodically summarizing progress, or triggering other slash commands on a timer:
 
@@ -743,6 +755,14 @@ copilot --plan          # start in plan mode (propose without executing)
 ```
 
 This is useful in scripts or CI pipelines where you want the CLI to immediately begin working in a specific mode without an interactive prompt.
+
+*(v1.0.79+)* You can combine `--plan` with `--mode autopilot` to have the CLI plan first and then immediately implement without waiting for your approval:
+
+```bash
+copilot --plan --mode autopilot "Refactor the authentication module"
+```
+
+This lets you see the plan as it is generated and then have the agent execute it automatically — without needing to type an explicit "proceed" after reviewing.
 
 The `--max-autopilot-continues` flag controls how many times Copilot can automatically continue in autopilot mode before pausing for confirmation. The default is 5:
 
