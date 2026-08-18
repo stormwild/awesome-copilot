@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-18
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -34,6 +34,8 @@ A plugin bundles one or more of the following components:
 | **MCP Servers** | Model Context Protocol integrations for external tools | `.mcp.json` or `.github/mcp.json` |
 | **LSP Servers** | Language Server Protocol integrations | `lsp.json` or `.github/lsp.json` |
 | **Extensions** | IDE extensions installable via the plugin marketplace (v1.0.62+) | `extensions/` |
+
+> **Upcoming breaking change (Agent Plugins spec)**: Starting with v1.0.80, plugins following the Agent Plugins spec must place all components under a `com.github.copilot/` subdirectory at the plugin root (e.g., `com.github.copilot/agents/`, `com.github.copilot/hooks/hooks.json`). Components placed directly at the plugin root are no longer loaded. If you maintain your own plugins using the Agent Plugins spec, move your content into `com.github.copilot/`. Plugins built on the `plugin.json` manifest format are unaffected.
 
 A plugin might include all of these or just one — for example, a plugin could provide a single specialized agent, or an entire development toolkit with multiple agents, skills, hooks, and MCP server configurations working together.
 
@@ -181,6 +183,26 @@ Pinning to a SHA guarantees that everyone on the team installs plugins from exac
 - **Reproducible CI environments** — ensure builds always use the same plugin versions
 - **Change control** — review and approve plugin updates before rolling them out team-wide
 - **Stability** — prevent breaking changes in upstream marketplaces from impacting your team without notice
+
+### Auto-Updating Plugins at Session Start
+
+*(v1.0.79+)* You can configure a marketplace to automatically update all its plugins at the start of every session by adding `"autoUpdate": true` to the marketplace entry in your user settings:
+
+```json
+{
+  "extraKnownMarketplaces": [
+    {
+      "name": "my-org-plugins",
+      "source": "my-org/internal-plugins",
+      "autoUpdate": true
+    }
+  ]
+}
+```
+
+With `autoUpdate` enabled, each time you start a Copilot CLI session the CLI silently fetches and installs the latest versions of all plugins from that marketplace. This is especially useful for internal team marketplaces where you always want everyone on the latest tooling without manual update steps.
+
+> **Note**: `autoUpdate` is a user-level setting (not recommended for repository-level `extraKnownMarketplaces`) since auto-updates at session start are a personal workflow preference.
 
 ## Installing Plugins
 
