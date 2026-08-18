@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-18
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -469,6 +469,16 @@ The settings dialog supports search — type to filter settings by name. Changes
 ```
 
 These flags mirror the **Repo** and **Repo (local)** scope tabs available in the `/settings` dashboard (v1.0.71+), making it easier to manage per-repository vs. user-global configuration without ambiguity. In v1.0.71+, the `/settings` dashboard also shows **Repo** and **Repo (local)** tabs alongside the existing user-level view, giving you a unified place to see which settings are applied at each layer.
+
+**Session-scoped model selection** *(v1.0.79+)*: `/model` is now **session-scoped by default** — changing your model during a session no longer permanently overwrites your saved preference. When you close the session, the model resets to your saved default. To change the default model for all future sessions, use the new `/config model` command:
+
+```
+/model                    # pick a model for this session only
+/config model             # open the model picker and set the persistent default
+/config model claude-sonnet-4.6  # set a persistent default directly
+```
+
+This makes it easy to experiment with different models mid-session without accidentally changing your preferred default.
 
 GitHub Copilot CLI has two commands for managing session state, with distinct behaviours:
 
