@@ -3,7 +3,7 @@ title: 'GitHub Copilot Terminology Glossary'
 description: 'A quick reference guide defining common GitHub Copilot and platform-specific terms.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-04-02
+lastUpdated: 2026-08-19
 estimatedReadingTime: '8 minutes'
 tags:
   - glossary
@@ -244,6 +244,106 @@ An installable package that extends GitHub Copilot CLI with a bundled set of age
 **Learn more**: [Installing and Using Plugins](../installing-and-using-plugins/)
 
 **Related terms**: [Agent](#agent), [Skill](#skill), [Hook](#hook)
+
+---
+
+### Space (Copilot Space)
+
+A curated knowledge base owned by a user or organization that grounds Copilot responses in project-specific context. A Space packages repositories, GitHub issues, free-text documentation, and custom instructions into a named collection. Loading a Space gives Copilot access to all of its resources for the duration of your conversation.
+
+**Example**: A "Security Standards" space might contain your organization's compliance policies, approved library list, and vulnerability checklists — so Copilot answers security questions using your actual internal standards.
+
+**Key characteristics**:
+- Owned by a user or organization, with optional collaborator access
+- Linked GitHub issues and files update automatically as the underlying content changes
+- General instructions in a Space act as directives, guiding Copilot's behavior when the Space is active
+- Accessible via the GitHub MCP server (read) or REST API (full CRUD)
+
+**When to use**: For project-specific knowledge bases, team onboarding, domain-specific workflows, or any scenario where Copilot should draw on curated documentation rather than general knowledge.
+
+**Learn more**: [Working with Copilot Spaces](../working-with-copilot-spaces/)
+
+**Related terms**: [MCP](#mcp-model-context-protocol), [Instruction](#instruction), [Custom Agent](#custom-agent)
+
+---
+
+### Canvas
+
+An interactive work surface inside the GitHub Copilot app where you and agents collaborate on a shared artifact. Instead of a linear chat thread, a canvas displays the actual work — a document, diagram, plan, or live output — that both you and the agent can edit and iterate on. Canvases can be evolved into reusable **Canvas Extensions** shared across your team.
+
+**Example**: A `/create-canvas` command might produce a canvas showing a project plan. The agent updates sections as it works, and you can edit, approve, or redirect changes directly on the same surface.
+
+**When to use**: For collaborative artifact creation, visual workflows, or any task where seeing the work in progress is more useful than reading a chat response.
+
+**Learn more**: [Working with Canvas Extensions](../working-with-canvas-extensions/)
+
+**Related terms**: [Coding Agent](#coding-agent), [Plugin](#plugin)
+
+---
+
+### Agent Merge
+
+A Copilot app automation that carries pull requests through the full merge lifecycle autonomously. Once enabled, Agent Merge can monitor CI/CD pipelines, address failing tests or linting errors, track required reviewers, and automatically merge the PR when all conditions are met. The automation level is configurable — you can set it to just run CI, fix feedback, or go all the way to merging.
+
+**Example**: After the coding agent opens a PR, Agent Merge monitors it, addresses review comments, waits for approvals, and merges when everything is green — without you having to check back manually.
+
+**When to use**: When you want to eliminate the manual toil of shepherding PRs through CI and review cycles.
+
+**Learn more**: [Getting Started with the GitHub Copilot app](../github-copilot-app/)
+
+**Related terms**: [Coding Agent](#coding-agent), [Hook](#hook)
+
+---
+
+### Remote Control
+
+A GitHub Copilot CLI feature that lets you connect to and steer a running coding agent session — either a local session you've made remotely accessible, or a cloud agent session — without waiting for it to finish. Remote control lets you observe the agent's progress in real time, send follow-up prompts, and redirect its work mid-task.
+
+**Usage**:
+```bash
+copilot --remote     # start a remote-accessible session
+/remote on           # enable remote control in an existing session
+/remote off          # disable remote control
+copilot --resume     # pick up any active remote session
+```
+
+**When to use**: For long-running agent tasks where you want to steer without waiting for a PR, or to provide mid-task clarification before the agent heads in the wrong direction.
+
+**Learn more**: [Using the Copilot Coding Agent](../using-copilot-coding-agent/)
+
+**Related terms**: [Coding Agent](#coding-agent)
+
+---
+
+### Mission Control
+
+The dashboard view on GitHub.com for tracking all active coding agent sessions across your repositories. Mission Control provides a centralized overview of what tasks are running, what's been completed, and what needs attention — without needing to check each repository separately.
+
+**When to use**: When managing multiple parallel coding agent sessions and needing a single place to monitor their progress and outcomes.
+
+**Learn more**: [Using the Copilot Coding Agent](../using-copilot-coding-agent/)
+
+**Related terms**: [Coding Agent](#coding-agent)
+
+---
+
+### Agentic Workflow
+
+A markdown file that combines YAML frontmatter (triggers, permissions, safe outputs) with natural language instructions that a coding agent follows at runtime inside GitHub Actions. Agentic Workflows are compiled to `.lock.yml` files via the `gh aw` CLI and triggered by schedules, repository events, or slash commands.
+
+**Example**: A `daily-issues-report.md` workflow that runs every weekday, reads open issues, writes a summary, and posts it as a new issue — without any manual intervention.
+
+**Key characteristics**:
+- Defined in a single `.md` file — no YAML Actions syntax required
+- Natural language instructions are the workflow logic
+- Use least-privilege permissions and safe outputs for security
+- Compiled with `gh aw compile` before committing
+
+**When to use**: For autonomous, event-driven repository automation that requires reasoning, summarization, or context-aware decisions beyond what static GitHub Actions steps can handle.
+
+**Learn more**: [Agentic Workflows](../agentic-workflows/)
+
+**Related terms**: [Coding Agent](#coding-agent), [Hook](#hook)
 
 ---
 
