@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-20
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -445,9 +445,30 @@ These files follow the same format as `config.json` and are loaded after the glo
 
 The model picker opens in a **full-screen view** with inline reasoning effort adjustment. Use the **← / →** arrow keys to change the reasoning effort level (`low`, `medium`, `high`) directly from the picker without leaving the session. The current reasoning effort level is also displayed in the model header (e.g., `claude-sonnet-4.6 (high)`) so you always know which level is active.
 
+**Model picker grouping** (v1.0.79+): The model picker groups models into **Recent**, **Recommended**, **New**, and other sections to help you quickly find a model. Use **Shift+Tab** to cycle through grouping views.
+
 **Auto mode and server-side model routing** (v1.0.43+): When you select **Auto** as your model, the CLI uses server-side model routing for real-time model selection. Instead of locking in a single model at session start, Auto mode evaluates each request and routes it to the most appropriate model dynamically. This means straightforward questions can be handled by a faster model while complex reasoning tasks are automatically escalated — without you needing to switch models manually.
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
+
+**Session-scoped model selection** (v1.0.79+): `/model` is now **session-scoped by default** — changing it only affects the current session and does not update your global default. To set a model that persists across all future sessions, use `/config model`:
+
+```
+/model                     # pick a model for this session only
+/config model              # pick a model to use as the default for all new sessions
+```
+
+This separation makes it easy to try a different model for a single session without accidentally changing your preferred default.
+
+**Plan mode model** (v1.0.74+): Use `/model plan` (or `/model --plan`) to pick a model used exclusively while in plan mode. Pass a model id to set it, `off` to clear, or no argument to open the picker:
+
+```
+/model plan claude-sonnet-4.6   # use a specific model in plan mode
+/model plan off                 # clear the plan-mode model override
+/model plan                     # open the model picker for plan mode
+```
+
+This reverts to the session model when you leave plan mode, letting you use a lighter or more capable model for planning without affecting your implementation model.
 
 ### CLI Session Commands
 
@@ -478,6 +499,21 @@ GitHub Copilot CLI has two commands for managing session state, with distinct be
 | `/clear [prompt]` | Abandons the current session entirely and starts a new one. Backgrounded sessions are not affected. MCP servers configured in your project are preserved in the new session. |
 
 Both commands accept an optional prompt argument to seed the new session with an opening message, for example `/new Add error handling to the login flow`.
+
+**Managing multiple concurrent sessions** (v1.0.79+): The CLI now includes a **Sessions sidebar** for switching between, spawning, and monitoring multiple active sessions at a glance. Open it with the sidebar toggle, or enable it with `/experimental on` if it is not yet visible. Each session card shows the session name, current status, and working directory — allowing you to run parallel tasks in separate sessions without opening multiple terminal windows.
+
+```
+/new                        # background the current session and start a fresh one
+Ctrl+←/→                   # switch between open sessions in the sidebar
+```
+
+**Open the current session in the GitHub Copilot app** (v1.0.79+): Use `/app` to jump from your terminal session directly into the GitHub Copilot desktop app, where you can continue working with the full app UI including canvases and the My Work view:
+
+```
+/app
+```
+
+This requires GitHub Copilot app v1.1.3 or later. The `/app` command opens the current session in the app at the exact conversation state you were in, so you can pick up right where you left off.
 
 The `/session rename` command renames the current session. When called **without a name argument**, it automatically generates a session name based on the conversation history:
 
@@ -554,6 +590,22 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 ```
 
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
+
+**`/worktree new`** (v1.0.79+): To start a fresh conversation in a brand-new worktree without carrying over your current session's context, use:
+
+```
+/worktree new
+```
+
+This creates a new worktree and opens a new session inside it, giving you a clean slate. Use it when you want to start a completely independent parallel task rather than continuing in a new branch from your current context.
+
+**`worktreeBaseRef` setting** (v1.0.79+): The `worktreeBaseRef` setting controls whether `/worktree`, `/worktree new`, and `--worktree` base new worktrees on the current `HEAD` or the remote default branch. All three now default to `HEAD`. To change this, add `worktreeBaseRef` to your settings:
+
+```json
+{
+  "worktreeBaseRef": "origin/main"
+}
+```
 
 After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
 
@@ -741,6 +793,14 @@ copilot --mode agent    # start in agent mode (autonomous tool use)
 copilot --autopilot     # alias for --mode autopilot (allow-all)
 copilot --plan          # start in plan mode (propose without executing)
 ```
+
+**Combine `--plan` with `--mode autopilot`** (v1.0.79+): You can now combine both flags to have the agent **plan first** and then **implement automatically** without waiting for your approval between phases:
+
+```bash
+copilot --plan --mode autopilot "Add rate limiting to the login endpoint"
+```
+
+This is useful when you want to review the plan structure (it is generated first) but then let the agent implement it without further interruption. Without `--mode autopilot`, the agent would pause after planning and wait for your go-ahead before proceeding.
 
 This is useful in scripts or CI pipelines where you want the CLI to immediately begin working in a specific mode without an interactive prompt.
 
