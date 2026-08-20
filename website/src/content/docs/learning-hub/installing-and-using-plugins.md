@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-20
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -99,6 +99,8 @@ Plugins are collected in **marketplaces** — registries you can browse and inst
 
 - **`copilot-plugins`** — Official GitHub Copilot plugins
 - **`awesome-copilot`** — Community-contributed plugins from this repository
+
+**Open Plugin Spec v1** (v1.0.74+): Copilot CLI now also supports plugins that follow the [Open Plugin Spec v1](https://github.com/openpluginsspec/openpluginsspec) manifest format. This means you can install plugins created for compatible tools without any conversion. The CLI reads `mcp.json` configuration files alongside `plugin.json` manifests automatically.
 
 ### Browsing in Copilot CLI
 
@@ -221,6 +223,40 @@ copilot plugin marketplace update
 # Remove a plugin
 copilot plugin uninstall my-plugin
 ```
+
+### Automatic Plugin Updates
+
+**First-party plugins** (plugins from the official `copilot-plugins` marketplace) **auto-update to the latest version at session start** (v1.0.78+). You don't need to run `copilot plugin update` manually for these plugins.
+
+For plugins from other marketplaces (such as `awesome-copilot`), you can opt into automatic updates by adding `"autoUpdate": true` to the marketplace entry in your settings (v1.0.79+):
+
+```json
+{
+  "extraKnownMarketplaces": [
+    {
+      "name": "my-org-plugins",
+      "source": "my-org/internal-plugins",
+      "autoUpdate": true
+    }
+  ]
+}
+```
+
+With `autoUpdate` enabled, plugins from that marketplace are updated to the latest version at session start, just like first-party plugins.
+
+### Enabling and Disabling Plugins
+
+*(v1.0.76+)* The `/plugins` command supports `enable` and `disable` controls so you can temporarily turn off a plugin without uninstalling it. You can also target specific components using flags:
+
+```
+/plugins                         # open the plugins management interface
+/plugins disable my-plugin       # disable a plugin (agents, skills, hooks inactive)
+/plugins enable my-plugin        # re-enable a disabled plugin
+/plugins disable --skill my-skill   # disable a specific skill
+/plugins disable --mcp my-server    # disable a specific MCP server
+```
+
+Disabled plugins stay installed but their agents, skills, hooks, and MCP servers are not loaded. This is useful for troubleshooting, temporarily excluding a plugin from a specific task, or testing a modified version before fully switching over.
 
 ### Loading Plugins from a Local Directory
 
