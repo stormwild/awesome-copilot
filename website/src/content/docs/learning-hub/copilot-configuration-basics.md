@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-21
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -191,6 +191,8 @@ my-monorepo/
 ```
 
 When you work inside `packages/api/`, Copilot loads configuration from `packages/api/.github/`, then `packages/.github/` (if it exists), then the root `.github/`. This layered discovery ensures the right context is active no matter where in the repository you're working.
+
+*(v1.0.79+)* **Large monorepo search**: In very large codebases, the CLI uses [tgrep](https://github.com/microsoft/tgrep) — a trigram-indexed grep — instead of standard ripgrep for code search. This significantly speeds up searches across millions of files by building a search index, so the agent can find symbols and patterns quickly even in massive repositories. No configuration is needed; tgrep activates automatically when the repository size warrants it.
 
 ### Personal Skills Directory
 
@@ -449,6 +451,10 @@ The model picker opens in a **full-screen view** with inline reasoning effort ad
 
 **Model family aliases** (v1.0.64+): Instead of typing a full model name, you can use short family aliases in the model setting: `opus`, `sonnet`, `haiku` (Anthropic), and `gpt`, `gemini` (Google/OpenAI). The CLI resolves the alias to the latest available model in that family. This is especially useful in scripts or configuration files where you want to track the best model in a family without hardcoding a version string.
 
+**Model picker grouping** (v1.0.79+): The model picker organises models into **Recent**, **Recommended**, **New**, and other sections so the most relevant choices surface first. Press **Shift+Tab** to switch between grouping views without leaving the picker.
+
+**Available models**: As of v1.0.79, the CLI supports `kimi-k3` in addition to the existing Claude, GPT, and Gemini families. Use `/model` to see the full list of models available on your plan.
+
 ### CLI Session Commands
 
 The `/settings` command (v1.0.61+) opens an interactive dialog to browse and edit all user settings in one place. Use it to discover available settings, toggle options, and update values without manually editing your config file:
@@ -507,6 +513,8 @@ You can also press **x** on a highlighted session in the session picker (`--resu
 
 In the session picker, press **`s`** to cycle the sort order: relevance, last used, created, or name. The picker also shows the branch name and idle/in-use status for each session.
 
+**Managing multiple concurrent sessions** (v1.0.79+): The CLI now includes a dedicated **Sessions tab** and sidebar entry for switching between active sessions without leaving the current session. Open it to see all running and backgrounded sessions at a glance, and navigate between them in one step — no need to use `--resume` from the command line.
+
 The `/rewind` command opens a timeline picker that lets you roll back the conversation to any earlier point in history, reverting both the conversation and any file changes made after that point. You can also trigger it by pressing **double-Esc**:
 
 ```
@@ -556,6 +564,27 @@ In v1.0.66+, you can pass a task description to `/worktree` to name the branch f
 This creates a branch named from your task description and begins working on it immediately, making it easy to spin up parallel work without stopping to think of a branch name.
 
 After the command runs, the session is inside the new worktree. Use this when you want to work on a second task in parallel without stashing changes or opening a new terminal. In v1.0.64+ you can also use the experimental `--worktree` flag at startup (`copilot -w [name]`) to create or reuse a worktree under `<repo>.worktrees/` before the session begins.
+
+**`/worktree new`** (v1.0.79+): Use `/worktree new` to start a brand-new session in a freshly created worktree — without moving any uncommitted changes. This is the cleanest way to spin up a parallel task from a clean slate:
+
+```
+/worktree new         # new session in a new worktree starting from HEAD
+/worktree new my-fix  # new session in a worktree named my-fix
+```
+
+**`worktreeBaseRef` setting** (v1.0.79+): By default, `/worktree`, `/worktree new`, and `--worktree` all start from `HEAD`. If you prefer to branch from the remote default branch instead, set `worktreeBaseRef` in your settings:
+
+```json
+{
+  "worktreeBaseRef": "origin/main"
+}
+```
+
+**`/app` command** (v1.0.79+): The `/app` command opens the current CLI session in the GitHub Copilot desktop app, transferring context so you can continue working in the app's visual interface. Requires GitHub Copilot app 1.1.3 or later:
+
+```
+/app
+```
 
 The `/every` command (also available as `/loop` since v1.0.64) schedules a recurring prompt to run automatically at a specified interval. The companion `/after` command runs a prompt once after a specified delay. Both are useful for self-paced automation — polling for results, periodically summarizing progress, or triggering other slash commands on a timer:
 
@@ -744,6 +773,14 @@ copilot --plan          # start in plan mode (propose without executing)
 
 This is useful in scripts or CI pipelines where you want the CLI to immediately begin working in a specific mode without an interactive prompt.
 
+*(v1.0.79+)* You can combine `--plan` with `--mode autopilot` to plan first and then implement without waiting for approval in between. The CLI runs the planning phase, then automatically transitions into autopilot to execute the plan end-to-end:
+
+```bash
+copilot --plan --mode autopilot "Add rate limiting to the API endpoints"
+```
+
+This is useful for well-understood tasks where you trust the plan and want to run the full cycle unattended.
+
 The `--max-autopilot-continues` flag controls how many times Copilot can automatically continue in autopilot mode before pausing for confirmation. The default is 5:
 
 ```bash
@@ -760,6 +797,16 @@ copilot --no-sandbox -p "Set up development environment with system tools"
 ```
 
 These flags apply only to the current invocation — your persisted sandbox preference remains unchanged.
+
+*(v1.0.79+)* Use the `/sandbox policy` command to inspect the **effective sandbox configuration** for the current session — active paths, any recorded denials, and whether network access is enabled:
+
+```
+/sandbox policy
+```
+
+This is useful for diagnosing unexpected `permission denied` errors or confirming which paths are writable before running a tool.
+
+> **⚠️ Breaking change (v1.0.79)**: The sandbox setting `allowDevToolCaches` has been **renamed to `allowDevToolAccess`** (it now grants dev-tool config and registries in addition to caches). The old key is silently ignored, so if you had `"allowDevToolCaches": false` to opt out, you must rename it to `"allowDevToolAccess": false` in your `settings.json` and any MDM/managed policy files, or the restriction will silently revert to the default (on).
 
 The `--attachment` flag (available in prompt mode, `-p`) lets you attach files — images or native documents — to the initial prompt in non-interactive mode:
 

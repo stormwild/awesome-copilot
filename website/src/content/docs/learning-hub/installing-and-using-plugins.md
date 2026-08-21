@@ -3,7 +3,7 @@ title: 'Installing and Using Plugins'
 description: 'Learn how to find, install, and manage plugins that extend GitHub Copilot CLI with reusable agents, skills, hooks, and integrations.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-21
 estimatedReadingTime: '8 minutes'
 tags:
   - plugins
@@ -34,6 +34,8 @@ A plugin bundles one or more of the following components:
 | **MCP Servers** | Model Context Protocol integrations for external tools | `.mcp.json` or `.github/mcp.json` |
 | **LSP Servers** | Language Server Protocol integrations | `lsp.json` or `.github/lsp.json` |
 | **Extensions** | IDE extensions installable via the plugin marketplace (v1.0.62+) | `extensions/` |
+
+*(v1.0.79+)* Plugins following the Agent Plugins spec can also ship **VS Code extensions** by placing them under a `com.github.copilot/extensions/` directory inside the plugin. These extension assets are installed automatically when you install the plugin in VS Code, giving you editor-level capabilities (language features, sidebar panels, etc.) bundled with the agent and skill components.
 
 A plugin might include all of these or just one — for example, a plugin could provide a single specialized agent, or an entire development toolkit with multiple agents, skills, hooks, and MCP server configurations working together.
 
@@ -124,7 +126,7 @@ Or from within an interactive Copilot session:
 
 ### Browsing in VS Code
 
-Because `awesome-copilot` is a default marketplace in VS Code, you can discover plugins without any configuration:
+*(v1.0.79+ / VS Code 1.133+)* The VS Code extension ships with **Agent Plugins 1.0** support — the same plugin spec used in Copilot CLI — so plugins you install via VS Code and the CLI share the same components. To discover plugins in VS Code:
 
 - Open the **Extensions** search view and type **`@agentPlugins`** to see all available plugins
 - Or open the **Command Palette** (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **Chat: Plugins**
@@ -247,6 +249,8 @@ When you install a plugin, its components become available to Copilot CLI automa
 - **MCP servers** extend the tools available to agents
 
 You don't need to do any additional configuration after installing — the plugin's components integrate seamlessly into your workflow. Plugins take effect immediately after installation without requiring a Copilot CLI restart.
+
+*(v1.0.79+)* Plugin custom agents that include a **`deferred-tool-loading`** frontmatter field are respected at runtime. This means agents that declare they should load tools lazily (on first use) will honour that setting when loaded from a plugin, reducing session startup time for agents with many tool configurations.
 
 ## Plugins from This Repository
 
