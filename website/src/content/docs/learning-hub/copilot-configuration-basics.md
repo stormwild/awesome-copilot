@@ -3,7 +3,7 @@ title: 'Copilot Configuration Basics'
 description: 'Learn how to configure GitHub Copilot at user, workspace, and repository levels to optimize your AI-assisted development experience.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-13
+lastUpdated: 2026-08-22
 estimatedReadingTime: '10 minutes'
 tags:
   - configuration
@@ -429,6 +429,8 @@ CLI settings use **camelCase** naming. Key settings added in recent releases:
 | `proxy` | HTTP(S) proxy URL for all outbound CLI requests (e.g., `http://proxy.example.com:8080`) (v1.0.64+) |
 | `sessionLimits` | Restrict credit or turn usage for a session; limits apply across the current conversation and reset on `/clear` (v1.0.66+) |
 | `stayInAutopilot` | Keep the CLI in autopilot mode after an autopilot task completes, instead of returning to interactive mode (v1.0.69+) |
+| `defaultMode` | Default agent mode for new interactive sessions: `agent`, `auto`, `plan`, or `ask` (v1.0.81+) |
+| `defaultPermissionMode` | Default permission/approval mode for new interactive sessions: `default`, `auto`, `allow-all`, or `plan` (v1.0.81+) |
 
 > **Note**: Older snake_case names (e.g., `include_gitignored`, `auto_updates_channel`) are still accepted for backward compatibility, but camelCase is now the preferred format.
 
@@ -784,7 +786,29 @@ copilot --config-dir ~/.my-copilot-config
 
 Set `COPILOT_HOME` in your shell profile to use a custom config directory across all sessions. This is especially useful when running multiple Copilot configurations for different projects or teams.
 
-### Shell Completion
+### Session Restore
+
+*(v1.0.81+)* When you start the CLI after a crash or machine restart, Copilot automatically offers to restore any sessions that were still open when they were interrupted. Instead of losing your work, you can pick up exactly where you left off:
+
+```
+Restore previous sessions?
+  > Yes — restore 2 open sessions
+    No — start fresh
+```
+
+Sessions are listed with their working directory and last activity. Select one to resume it, or decline to start a new session. This is particularly useful when running long-running agent tasks that were interrupted unexpectedly.
+
+### Authentication with Token
+
+*(v1.0.81+)* The `--with-token` flag for `copilot login` lets you read an auth token directly from stdin, making it easier to automate authentication in CI pipelines or scripts:
+
+```bash
+echo "$GITHUB_TOKEN" | copilot login --with-token
+```
+
+This avoids interactive prompts in non-interactive environments while keeping tokens out of your command history.
+
+
 
 The `copilot completion` subcommand generates a static shell completion script for subcommands, flags, and known option values. Once installed, pressing Tab auto-completes Copilot CLI commands in your terminal.
 
