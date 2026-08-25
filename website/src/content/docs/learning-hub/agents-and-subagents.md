@@ -3,7 +3,7 @@ title: 'Agents and Subagents'
 description: 'Learn how delegated subagents differ from primary agents, when to use them, and how to launch them in VS Code and Copilot CLI.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-07-01
+lastUpdated: 2026-08-25
 estimatedReadingTime: '9 minutes'
 tags:
   - agents
@@ -211,6 +211,22 @@ No. They can run sequentially when one step depends on another, or in parallel w
 **Can I control how many subagents run simultaneously?**
 
 Yes. In v1.0.66+, usage-based billing users can configure **subagent concurrency and depth limits** directly from `/settings`. The concurrency limit controls how many subagents run in parallel; the depth limit controls how many levels deep delegation can chain (preventing runaway recursive subagent trees). These settings give you predictable control over resource consumption during complex orchestrated tasks.
+
+## VS Code 1.134: Subagent chat panels and session notifications
+
+VS Code 1.134 (August 2026) introduced two improvements that make working with subagents easier to observe and manage:
+
+### Side-by-side subagent chat panels
+
+When a main agent launches a subagent, VS Code now opens the subagent as a **separate chat panel** that you can view side-by-side with the main conversation. This makes it easy to see what each subagent is doing in real time — you no longer have to switch between tabs or wait for a synthesized summary to understand what's happening in a delegated subtask.
+
+You can arrange panels with the standard VS Code editor split controls. If the subagent produces intermediate output you want to reference later, it stays in its own scrollable transcript rather than being buried in the parent thread.
+
+### Agent session notifications
+
+Long-running agent sessions can now raise **OS-level notifications** when they need your input, finish successfully, or encounter an error. This is especially useful when you have multiple agent sessions running in parallel across several VS Code windows — you don't have to switch focus to discover that one session has been waiting for approval.
+
+Notifications are enabled by default. You can manage them in VS Code **Settings → Extensions → GitHub Copilot → Agent: Notifications**.
 
 ## Next steps
 
