@@ -3,7 +3,7 @@ title: 'Understanding Copilot Context'
 description: 'Learn how GitHub Copilot uses context from your code, workspace, and conversation to generate relevant suggestions.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2025-11-28
+lastUpdated: 2026-08-25
 estimatedReadingTime: '8 minutes'
 tags:
   - context
@@ -161,6 +161,27 @@ A: Yes, you have several ways to control context:
 **Q: Does closing a file remove it from context?**
 
 A: Yes, closing a file can remove it from Copilot's active context. However, files you've recently worked with may still influence suggestions briefly. For a clean context reset, you can restart your editor or start a new chat session.
+
+## VS Code 1.134: Navigating and searching session context
+
+VS Code 1.134 (August 2026) added two features that make it easier to work with context across long Copilot agent sessions:
+
+### Prompt timeline
+
+The **prompt timeline** lets you navigate the history of a long agent session and review which files were changed at each step. Instead of scrolling back through a long chat transcript to understand what an agent did earlier in a session, you can jump directly to any point in the timeline and see the state of the conversation and edits at that moment.
+
+This is especially useful when:
+- Reviewing what an agent changed before it reached its current state
+- Identifying the step where an unwanted change was introduced
+- Understanding context decisions made earlier in a long session
+
+Open the prompt timeline from the Copilot Chat panel's **Session History** menu (the clock icon in the toolbar).
+
+### Find in chat
+
+The **find in chat** feature lets you search across the complete transcript of a Copilot Chat session — including both your messages and the agent's responses. Press **Ctrl+F** (or **Cmd+F** on macOS) inside the Copilot Chat panel to open the search bar.
+
+This complements `#codebase` for code search: find in chat searches the conversation itself, not the files. Useful for locating a suggestion the agent made several turns ago or finding an earlier explanation you want to reference.
 
 ## Next Steps
 
